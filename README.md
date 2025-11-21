@@ -1,4 +1,4 @@
-# WooCommerce Pickup Location Manager
+# Pickup Location Manager
 
 ![Version](https://img.shields.io/badge/version-2.4.1-blue.svg)
 ![WordPress](https://img.shields.io/badge/WordPress-5.8%2B-blue.svg)

@@ -1,7 +1,7 @@
 <?php
 /**
- * Plugin Name: WooCommerce Pickup Location Manager
- * Plugin URI: https://example.com
+ * Plugin Name: Pickup Location Manager
+ * Plugin URI: https://github.com/aimbrenda/woocommerce-pickup-manager
  * Description: Manage multiple pickup locations with weekly schedules, date overrides, and advance booking limits
  * Version: 2.4.1
  * Author: Alessandro Imbrenda
