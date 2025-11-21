@@ -30,21 +30,13 @@ A comprehensive WordPress plugin that adds pickup location functionality to WooC
 
 ## 🚀 Installation
 
-### From GitHub
 
-1. Download the latest release from [Releases](https://github.com/yourusername/woocommerce-pickup-manager/releases)
-2. Upload the plugin folder to `/wp-content/plugins/`
+1. Download the latest release from [Releases](https://github.com/aimbrenda/woocommerce-pickup-manager/releases)
+2. Upload the plugin 
 3. Activate the plugin through WordPress admin
 4. Navigate to **Pickup Locations** in the admin menu
 
-### Manual Installation
 
-```bash
-cd wp-content/plugins/
-git clone https://github.com/yourusername/woocommerce-pickup-manager.git
-```
-
-Then activate through WordPress admin.
 
 ### Requirements
 
@@ -333,34 +325,20 @@ This plugin is licensed under the GPL-3.0 License - see the [LICENSE](LICENSE) f
 
 ## 💬 Support
 
-- **Issues**: [GitHub Issues](https://github.com/yourusername/woocommerce-pickup-manager/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/yourusername/woocommerce-pickup-manager/discussions)
-- **Documentation**: [Wiki](https://github.com/yourusername/woocommerce-pickup-manager/wiki)
-
-## 🔗 Links
-
-- [WordPress Plugin Directory](https://wordpress.org/plugins/woocommerce-pickup-manager/)
-- [Documentation](https://yourdomain.com/docs)
-- [Demo Site](https://demo.yourdomain.com)
+- **Issues**: [GitHub Issues](https://github.com/aimbrenda/woocommerce-pickup-manager/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/aimbrenda/woocommerce-pickup-manager/discussions)
+- **Documentation**: [Wiki](https://github.com/aimbrenda/woocommerce-pickup-manager/wiki)
 
 ## 🎯 Roadmap
 
 ### Planned Features
-- [ ] SMS/Email notifications for pickup reminders
-- [ ] Capacity management per location
-- [ ] Time slot selection (not just dates)
-- [ ] Multi-language admin interface
-- [ ] REST API endpoints
-- [ ] QR code for pickup verification
-- [ ] Google Calendar integration
-- [ ] Mobile app integration
 
 ## 📊 Stats
 
-![GitHub stars](https://img.shields.io/github/stars/yourusername/woocommerce-pickup-manager?style=social)
-![GitHub forks](https://img.shields.io/github/forks/yourusername/woocommerce-pickup-manager?style=social)
-![GitHub issues](https://img.shields.io/github/issues/yourusername/woocommerce-pickup-manager)
-![GitHub pull requests](https://img.shields.io/github/issues-pr/yourusername/woocommerce-pickup-manager)
+![GitHub stars](https://img.shields.io/github/stars/aimbrenda/woocommerce-pickup-manager?style=social)
+![GitHub forks](https://img.shields.io/github/forks/aimbrenda/woocommerce-pickup-manager?style=social)
+![GitHub issues](https://img.shields.io/github/issues/aimbrenda/woocommerce-pickup-manager)
+![GitHub pull requests](https://img.shields.io/github/issues-pr/aimbrenda/woocommerce-pickup-manager)
 
 ---
 
