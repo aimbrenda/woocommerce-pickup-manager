@@ -1,6 +1,6 @@
 # Pickup Location Manager
 
-![Version](https://img.shields.io/badge/version-2.4.1-blue.svg)
+![Version](https://img.shields.io/badge/version-2.4.2-blue.svg)
 ![WordPress](https://img.shields.io/badge/WordPress-5.8%2B-blue.svg)
 ![WooCommerce](https://img.shields.io/badge/WooCommerce-6.0%2B-purple.svg)
 ![PHP](https://img.shields.io/badge/PHP-7.4%2B-777BB4.svg)
@@ -275,31 +275,6 @@ To translate:
 - Firefox (latest)
 - Safari (latest)
 - Mobile browsers
-
-## 📝 Changelog
-
-### Version 2.1.0 (2025-11-21)
-- ✨ Added global enable/disable toggle
-- ✨ Added map link integration (Google Maps, Apple Maps, etc.)
-- ✨ Added configurable checkout field position
-- ✨ Added maximum advance booking limit
-- 🐛 Fixed position setting not working
-- 🐛 Fixed location deactivation not working
-- 🐛 Fixed pickup fee HTML formatting issue
-- 📚 Improved documentation
-
-### Version 2.0.0 (2025-11-19)
-- ✨ Added import/export functionality
-- ✨ Added weekly schedule with day-of-week selection
-- ✨ Added date override system
-- ✨ Added minimum preparation time
-- ✨ Added location-specific fees
-- ✨ Complete rewrite with improved architecture
-
-### Version 1.0.0 (Initial Release)
-- Initial release
-- Basic pickup location selection
-- Simple date picker
 
 ## 🤝 Contributing
 

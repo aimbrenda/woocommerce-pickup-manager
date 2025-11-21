@@ -3,7 +3,7 @@
  * Plugin Name: Pickup Location Manager
  * Plugin URI: https://github.com/aimbrenda/woocommerce-pickup-manager
  * Description: Manage multiple pickup locations with weekly schedules, date overrides, and advance booking limits
- * Version: 2.4.1
+ * Version: 2.4.2
  * Author: Alessandro Imbrenda
  * Text Domain: wc-pickup-manager
  * Domain Path: /languages
@@ -15,7 +15,7 @@
 
 if (!defined('ABSPATH')) exit;
 
-define('WC_PICKUP_MANAGER_VERSION', '2.1.0');
+define('WC_PICKUP_MANAGER_VERSION', '2.4.2');
 define('WC_PICKUP_MANAGER_PLUGIN_DIR', plugin_dir_path(__FILE__));
 define('WC_PICKUP_MANAGER_PLUGIN_URL', plugin_dir_url(__FILE__));
 
