@@ -1,0 +1,12 @@
+#pickup_location_fields {
+    padding-top: 20px;
+    padding-bottom: 20px;
+}
+
+#pickup_location_fields h3 {
+    margin-bottom: 15px;
+}
+
+#pickup_date {
+    cursor: pointer;
+}
