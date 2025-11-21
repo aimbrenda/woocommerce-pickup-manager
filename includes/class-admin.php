@@ -34,8 +34,8 @@ class WC_Pickup_Manager_Admin {
 
     public function enqueue_admin_assets($hook) {
         if (strpos($hook, 'pickup-location') === false) return;
-        wp_enqueue_style('wc-pickup-manager-admin', WC_PICKUP_MANAGER_PLUGIN_URL . 'assets/css/admin.css', array(), WC_PICKUP_MANAGER_VERSION);
-        wp_enqueue_script('wc-pickup-manager-admin', WC_PICKUP_MANAGER_PLUGIN_URL . 'assets/js/admin.js', array('jquery'), WC_PICKUP_MANAGER_VERSION, true);
+        wp_enqueue_style('pickup-location-manager-admin', WC_PICKUP_MANAGER_PLUGIN_URL . 'assets/css/admin.css', array(), WC_PICKUP_MANAGER_VERSION);
+        wp_enqueue_script('pickup-location-manager-admin', WC_PICKUP_MANAGER_PLUGIN_URL . 'assets/js/admin.js', array('jquery'), WC_PICKUP_MANAGER_VERSION, true);
     }
 
     public function render_locations_page() {
@@ -82,7 +82,7 @@ class WC_Pickup_Manager_Admin {
             $this->db->add_location($data);
             $redirect = add_query_arg(array('page' => 'pickup-locations', 'added' => '1'), admin_url('admin.php'));
         }
-        wp_redirect($redirect);
+        wp_safe_redirect($redirect);
         exit;
     }
 
@@ -90,7 +90,7 @@ class WC_Pickup_Manager_Admin {
         check_admin_referer('delete_pickup_location_' . $_GET['id']);
         if (!current_user_can('manage_woocommerce')) wp_die('No permission');
         $this->db->delete_location(intval($_GET['id']));
-        wp_redirect(add_query_arg(array('page' => 'pickup-locations', 'deleted' => '1'), admin_url('admin.php')));
+        wp_safe_redirect(add_query_arg(array('page' => 'pickup-locations', 'deleted' => '1'), admin_url('admin.php')));
         exit;
     }
 
@@ -99,7 +99,7 @@ class WC_Pickup_Manager_Admin {
         if (!current_user_can('manage_woocommerce')) wp_die('No permission');
         $this->db->add_override(intval($_POST['location_id']), sanitize_text_field($_POST['override_date']), 
             isset($_POST['is_open']), sanitize_text_field($_POST['note']));
-        wp_redirect(add_query_arg(array('page' => 'pickup-location-add', 'id' => intval($_POST['location_id']), 
+        wp_safe_redirect(add_query_arg(array('page' => 'pickup-location-add', 'id' => intval($_POST['location_id']), 
             'override_added' => '1'), admin_url('admin.php')));
         exit;
     }
@@ -108,7 +108,7 @@ class WC_Pickup_Manager_Admin {
         check_admin_referer('delete_override_' . $_GET['override_id']);
         if (!current_user_can('manage_woocommerce')) wp_die('No permission');
         $this->db->delete_override(intval($_GET['override_id']));
-        wp_redirect(add_query_arg(array('page' => 'pickup-location-add', 'id' => intval($_GET['location_id']), 
+        wp_safe_redirect(add_query_arg(array('page' => 'pickup-location-add', 'id' => intval($_GET['location_id']), 
             'override_deleted' => '1'), admin_url('admin.php')));
         exit;
     }
@@ -120,7 +120,7 @@ class WC_Pickup_Manager_Admin {
         update_option('wc_pickup_manager_checkout_position', sanitize_text_field($_POST['checkout_position']));
         update_option('wc_pickup_manager_enabled', isset($_POST['pickup_enabled']) && $_POST['pickup_enabled'] === 'yes' ? 'yes' : 'no');
 
-        wp_redirect(add_query_arg(array('page' => 'pickup-locations-settings', 'updated' => '1'), admin_url('admin.php')));
+        wp_safe_redirect(add_query_arg(array('page' => 'pickup-locations-settings', 'updated' => '1'), admin_url('admin.php')));
         exit;
     }
 }

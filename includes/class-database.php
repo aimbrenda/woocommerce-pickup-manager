@@ -55,8 +55,24 @@ class WC_Pickup_Manager_Database {
 
     public function get_all_locations($active_only = false) {
         global $wpdb;
-        $where = $active_only ? 'WHERE is_active = 1' : '';
-        $results = $wpdb->get_results("SELECT * FROM {$this->locations_table} {$where} ORDER BY name ASC");
+
+        if ($active_only) {
+            $results = $wpdb->get_results(
+                $wpdb->prepare(
+                    "SELECT * FROM %i WHERE is_active = %d ORDER BY name ASC",
+                    $this->locations_table,
+                    1
+                )
+            );
+        } else {
+            $results = $wpdb->get_results(
+                $wpdb->prepare(
+                    "SELECT * FROM %i ORDER BY name ASC",
+                    $this->locations_table
+                )
+            );
+        }
+
         foreach ($results as &$location) {
             $location->weekly_schedule = json_decode($location->weekly_schedule, true);
         }
@@ -65,7 +81,13 @@ class WC_Pickup_Manager_Database {
 
     public function get_location($id) {
         global $wpdb;
-        $location = $wpdb->get_row($wpdb->prepare("SELECT * FROM {$this->locations_table} WHERE id = %d", $id));
+        $location = $wpdb->get_row(
+            $wpdb->prepare(
+                "SELECT * FROM %i WHERE id = %d",
+                $this->locations_table,
+                $id
+            )
+        );
         if ($location) {
             $location->weekly_schedule = json_decode($location->weekly_schedule, true);
         }
@@ -120,10 +142,13 @@ class WC_Pickup_Manager_Database {
 
     public function get_location_overrides($location_id) {
         global $wpdb;
-        return $wpdb->get_results($wpdb->prepare(
-            "SELECT * FROM {$this->overrides_table} WHERE location_id = %d ORDER BY override_date ASC",
-            $location_id
-        ));
+        return $wpdb->get_results(
+            $wpdb->prepare(
+                "SELECT * FROM %i WHERE location_id = %d ORDER BY override_date ASC",
+                $this->overrides_table,
+                $location_id
+            )
+        );
     }
 
     public function add_override($location_id, $date, $is_open, $note = '') {

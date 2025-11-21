@@ -3,23 +3,24 @@
  * Plugin Name: Pickup Location Manager
  * Plugin URI: https://github.com/aimbrenda/woocommerce-pickup-manager
  * Description: Manage multiple pickup locations with weekly schedules, date overrides, and advance booking limits
- * Version: 2.4.2
+ * Version: 2.4.3
  * Author: Alessandro Imbrenda
- * Text Domain: wc-pickup-manager
- * Domain Path: /languages
+ * Text Domain: pickup-location-manager
  * Requires at least: 5.8
  * Requires PHP: 7.4
+ * License: GPL v3 or later
+ * License URI: https://www.gnu.org/licenses/gpl-3.0.txt
  * WC requires at least: 6.0
  * WC tested up to: 9.0
  */
 
 if (!defined('ABSPATH')) exit;
 
-define('WC_PICKUP_MANAGER_VERSION', '2.4.2');
+define('WC_PICKUP_MANAGER_VERSION', '2.4.3');
 define('WC_PICKUP_MANAGER_PLUGIN_DIR', plugin_dir_path(__FILE__));
 define('WC_PICKUP_MANAGER_PLUGIN_URL', plugin_dir_url(__FILE__));
 
-if (!in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_option('active_plugins')))) {
+if (!in_array('woocommerce/woocommerce.php', apply_filters('wc_pickup_active_plugins', get_option('wc_pickup_active_plugins')))) {
     add_action('admin_notices', function() {
         echo '<div class="error"><p>WooCommerce Pickup Location Manager requires WooCommerce to be installed and active.</p></div>';
     });
@@ -47,7 +48,6 @@ class WC_Pickup_Manager {
     }
 
     public function init() {
-        load_plugin_textdomain('wc-pickup-manager', false, dirname(plugin_basename(__FILE__)) . '/languages');
         WC_Pickup_Manager_Database::get_instance();
 
         if (is_admin()) {

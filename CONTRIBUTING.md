@@ -404,9 +404,9 @@ Help translate the plugin into your language:
 
 1. **Using Poedit:**
    - Download [Poedit](https://poedit.net/)
-   - Open `languages/wc-pickup-manager.pot`
+   - Open `languages/pickup-location-manager.pot`
    - Translate strings
-   - Save as `wc-pickup-manager-{locale}.po`
+   - Save as `pickup-location-manager-{locale}.po`
    - Generate `.mo` file
 
 2. **Using Loco Translate:**

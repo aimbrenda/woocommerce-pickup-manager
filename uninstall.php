@@ -24,4 +24,6 @@ $wpdb->query("DELETE FROM {$wpdb->prefix}postmeta WHERE meta_key IN ('_pickup_lo
 wp_cache_flush();
 
 // Log uninstallation (optional - remove if you don't want logging)
-error_log('WooCommerce Pickup Location Manager: Plugin data removed successfully');
+if (defined('WP_DEBUG') && WP_DEBUG) {
+    error_log('Pickup Location Manager: Plugin data removed successfully');
+}

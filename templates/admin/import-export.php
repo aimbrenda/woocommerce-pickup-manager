@@ -1,18 +1,19 @@
 <?php
 if (!defined('ABSPATH')) exit;
 
-$total_locations = count($locations);
+$wc_pickup_total_locations = count($locations);
 ?>
 
 <div class="wrap">
-    <h1><?php _e('Import / Export Pickup Locations', 'wc-pickup-manager'); ?></h1>
+    <h1><?php esc_html_e('Import / Export Pickup Locations', 'pickup-location-manager'); ?></h1>
 
     <?php if (isset($_GET['imported'])): ?>
         <div class="notice notice-success is-dismissible">
             <p>
                 <?php 
-                $mode = $_GET['mode'] === 'replace' ? __('Replaced all locations and imported', 'wc-pickup-manager') : __('Imported', 'wc-pickup-manager');
-                printf(__('%s %d location(s) successfully!', 'wc-pickup-manager'), $mode, intval($_GET['imported'])); 
+                $mode = $_GET['mode'] === 'replace' ? esc_html__('Replaced all locations and imported', 'pickup-location-manager') : esc_html__('Imported', 'pickup-location-manager');
+                /* translators: 1: Import mode (Add/Replace), 2: Number of locations */
+                printf(esc_html__('%1$s %2$d location(s) successfully!', 'pickup-location-manager'), esc_html($mode), intval($_GET['imported'])); 
                 ?>
             </p>
         </div>
@@ -24,16 +25,16 @@ $total_locations = count($locations);
                 <?php
                 switch($_GET['error']) {
                     case 'upload_failed':
-                        _e('File upload failed. Please try again.', 'wc-pickup-manager');
+                        esc_html_e('File upload failed. Please try again.', 'pickup-location-manager');
                         break;
                     case 'invalid_json':
-                        _e('Invalid JSON file. Please check the file format.', 'wc-pickup-manager');
+                        esc_html_e('Invalid JSON file. Please check the file format.', 'pickup-location-manager');
                         break;
                     case 'invalid_format':
-                        _e('Invalid file format. Please use a valid export file.', 'wc-pickup-manager');
+                        esc_html_e('Invalid file format. Please use a valid export file.', 'pickup-location-manager');
                         break;
                     default:
-                        _e('An error occurred during import.', 'wc-pickup-manager');
+                        esc_html_e('An error occurred during import.', 'pickup-location-manager');
                 }
                 ?>
             </p>
@@ -46,40 +47,44 @@ $total_locations = count($locations);
         <div style="background: #fff; padding: 20px; border: 1px solid #ddd; border-radius: 4px;">
             <h2 style="margin-top: 0;">
                 <span class="dashicons dashicons-download" style="color: #2271b1;"></span>
-                <?php _e('Export Locations', 'wc-pickup-manager'); ?>
+                <?php esc_html_e('Export Locations', 'pickup-location-manager'); ?>
             </h2>
 
-            <p><?php _e('Export all pickup locations, their settings, and date overrides to a JSON file.', 'wc-pickup-manager'); ?></p>
+            <p><?php esc_html_e('Export all pickup locations, their settings, and date overrides to a JSON file.', 'pickup-location-manager'); ?></p>
 
             <div style="background: #f9f9f9; padding: 15px; border-left: 4px solid #2271b1; margin: 15px 0;">
-                <h3 style="margin-top: 0; font-size: 14px;"><?php _e('What gets exported:', 'wc-pickup-manager'); ?></h3>
+                <h3 style="margin-top: 0; font-size: 14px;"><?php esc_html_e('What gets exported:', 'pickup-location-manager'); ?></h3>
                 <ul style="margin: 10px 0;">
-                    <li>✅ <?php printf(__('%d location(s)', 'wc-pickup-manager'), $total_locations); ?></li>
-                    <li>✅ <?php _e('All location settings (name, address, fees, delays)', 'wc-pickup-manager'); ?></li>
-                    <li>✅ <?php _e('Weekly schedules', 'wc-pickup-manager'); ?></li>
-                    <li>✅ <?php _e('Date overrides', 'wc-pickup-manager'); ?></li>
-                    <li>✅ <?php _e('Active/inactive status', 'wc-pickup-manager'); ?></li>
+                    <li>✅ <?php 
+                                /* translators: %d: Number of locations */
+                                printf(esc_html__('%d location(s)', 'pickup-location-manager'), esc_html($wc_pickup_total_locations)); 
+                            ?>
+                    </li>
+                    <li>✅ <?php esc_html_e('All location settings (name, address, fees, delays)', 'pickup-location-manager'); ?></li>
+                    <li>✅ <?php esc_html_e('Weekly schedules', 'pickup-location-manager'); ?></li>
+                    <li>✅ <?php esc_html_e('Date overrides', 'pickup-location-manager'); ?></li>
+                    <li>✅ <?php esc_html_e('Active/inactive status', 'pickup-location-manager'); ?></li>
                 </ul>
             </div>
 
-            <?php if ($total_locations > 0): ?>
-                <form method="post" action="<?php echo admin_url('admin-post.php'); ?>">
+            <?php if ($wc_pickup_total_locations > 0): ?>
+                <form method="post" action="<?php echo esc_url( admin_url('admin-post.php') ); ?>">
                     <?php wp_nonce_field('export_pickup_locations'); ?>
                     <input type="hidden" name="action" value="export_pickup_locations">
                     <p>
                         <button type="submit" class="button button-primary button-large">
                             <span class="dashicons dashicons-download" style="vertical-align: middle;"></span>
-                            <?php _e('Export All Locations', 'wc-pickup-manager'); ?>
+                            <?php esc_html_e('Export All Locations', 'pickup-location-manager'); ?>
                         </button>
                     </p>
                 </form>
 
                 <p class="description">
-                    <?php _e('Filename format: pickup-locations-export-YYYY-MM-DD-HHMMSS.json', 'wc-pickup-manager'); ?>
+                    <?php esc_html_e('Filename format: pickup-locations-export-YYYY-MM-DD-HHMMSS.json', 'pickup-location-manager'); ?>
                 </p>
             <?php else: ?>
                 <div class="notice notice-warning inline">
-                    <p><?php _e('No locations to export. Please add locations first.', 'wc-pickup-manager'); ?></p>
+                    <p><?php esc_html_e('No locations to export. Please add locations first.', 'pickup-location-manager'); ?></p>
                 </div>
             <?php endif; ?>
         </div>
@@ -88,44 +93,44 @@ $total_locations = count($locations);
         <div style="background: #fff; padding: 20px; border: 1px solid #ddd; border-radius: 4px;">
             <h2 style="margin-top: 0;">
                 <span class="dashicons dashicons-upload" style="color: #2271b1;"></span>
-                <?php _e('Import Locations', 'wc-pickup-manager'); ?>
+                <?php esc_html_e('Import Locations', 'pickup-location-manager'); ?>
             </h2>
 
-            <p><?php _e('Import pickup locations from a previously exported JSON file.', 'wc-pickup-manager'); ?></p>
+            <p><?php esc_html_e('Import pickup locations from a previously exported JSON file.', 'pickup-location-manager'); ?></p>
 
-            <form method="post" action="<?php echo admin_url('admin-post.php'); ?>" enctype="multipart/form-data">
+            <form method="post" action="<?php echo esc_url( admin_url('admin-post.php')); ?>" enctype="multipart/form-data">
                 <?php wp_nonce_field('import_pickup_locations'); ?>
                 <input type="hidden" name="action" value="import_pickup_locations">
 
                 <table class="form-table">
                     <tr>
                         <th scope="row">
-                            <label for="import_file"><?php _e('Select File', 'wc-pickup-manager'); ?> *</label>
+                            <label for="import_file"><?php esc_html_e('Select File', 'pickup-location-manager'); ?> *</label>
                         </th>
                         <td>
                             <input type="file" name="import_file" id="import_file" accept=".json" required>
-                            <p class="description"><?php _e('Choose a JSON file exported from this plugin', 'wc-pickup-manager'); ?></p>
+                            <p class="description"><?php esc_html_e('Choose a JSON file exported from this plugin', 'pickup-location-manager'); ?></p>
                         </td>
                     </tr>
 
                     <tr>
                         <th scope="row">
-                            <label for="import_mode"><?php _e('Import Mode', 'wc-pickup-manager'); ?></label>
+                            <label for="import_mode"><?php esc_html_e('Import Mode', 'pickup-location-manager'); ?></label>
                         </th>
                         <td>
                             <fieldset>
                                 <label style="display: block; margin-bottom: 10px;">
                                     <input type="radio" name="import_mode" value="add" checked>
-                                    <strong><?php _e('Add to existing', 'wc-pickup-manager'); ?></strong>
+                                    <strong><?php esc_html_e('Add to existing', 'pickup-location-manager'); ?></strong>
                                     <br>
-                                    <span class="description"><?php _e('Keep current locations and add imported ones', 'wc-pickup-manager'); ?></span>
+                                    <span class="description"><?php esc_html_e('Keep current locations and add imported ones', 'pickup-location-manager'); ?></span>
                                 </label>
 
                                 <label style="display: block;">
                                     <input type="radio" name="import_mode" value="replace">
-                                    <strong style="color: #d63638;"><?php _e('Replace all', 'wc-pickup-manager'); ?></strong>
+                                    <strong style="color: #d63638;"><?php esc_html_e('Replace all', 'pickup-location-manager'); ?></strong>
                                     <br>
-                                    <span class="description"><?php _e('⚠️ Delete all current locations and import new ones', 'wc-pickup-manager'); ?></span>
+                                    <span class="description"><?php esc_html_e('⚠️ Delete all current locations and import new ones', 'pickup-location-manager'); ?></span>
                                 </label>
                             </fieldset>
                         </td>
@@ -133,19 +138,19 @@ $total_locations = count($locations);
                 </table>
 
                 <p class="submit">
-                    <button type="submit" class="button button-primary button-large" onclick="return confirm('<?php esc_attr_e('Are you sure you want to import? This action cannot be undone.', 'wc-pickup-manager'); ?>');">
+                    <button type="submit" class="button button-primary button-large" onclick="return confirm('<?php esc_attresc_html_e('Are you sure you want to import? This action cannot be undone.', 'pickup-location-manager'); ?>');">
                         <span class="dashicons dashicons-upload" style="vertical-align: middle;"></span>
-                        <?php _e('Import Locations', 'wc-pickup-manager'); ?>
+                        <?php esc_html_e('Import Locations', 'pickup-location-manager'); ?>
                     </button>
                 </p>
             </form>
 
             <div style="background: #fff3cd; padding: 15px; border-left: 4px solid #ffc107; margin-top: 20px;">
-                <h4 style="margin-top: 0; color: #856404;">⚠️ <?php _e('Important Notes', 'wc-pickup-manager'); ?></h4>
+                <h4 style="margin-top: 0; color: #856404;">⚠️ <?php esc_html_e('Important Notes', 'pickup-location-manager'); ?></h4>
                 <ul style="margin: 0; color: #856404;">
-                    <li><?php _e('Always backup your data before importing', 'wc-pickup-manager'); ?></li>
-                    <li><?php _e('"Replace all" mode will delete ALL existing locations', 'wc-pickup-manager'); ?></li>
-                    <li><?php _e('Duplicate names are allowed (locations will have different IDs)', 'wc-pickup-manager'); ?></li>
+                    <li><?php esc_html_e('Always backup your data before importing', 'pickup-location-manager'); ?></li>
+                    <li><?php esc_html_e('"Replace all" mode will delete ALL existing locations', 'pickup-location-manager'); ?></li>
+                    <li><?php esc_html_e('Duplicate names are allowed (locations will have different IDs)', 'pickup-location-manager'); ?></li>
                 </ul>
             </div>
         </div>
@@ -153,25 +158,25 @@ $total_locations = count($locations);
 
     <!-- USAGE GUIDE -->
     <div style="background: #fff; padding: 20px; border: 1px solid #ddd; border-radius: 4px; margin-top: 20px;">
-        <h2><?php _e('Usage Guide', 'wc-pickup-manager'); ?></h2>
+        <h2><?php esc_html_e('Usage Guide', 'pickup-location-manager'); ?></h2>
 
-        <h3><?php _e('🔄 Migration Between Sites', 'wc-pickup-manager'); ?></h3>
+        <h3><?php esc_html_e('🔄 Migration Between Sites', 'pickup-location-manager'); ?></h3>
         <ol>
-            <li><?php _e('On OLD site: Go to Pickup Locations → Import/Export', 'wc-pickup-manager'); ?></li>
-            <li><?php _e('Click "Export All Locations" and save the JSON file', 'wc-pickup-manager'); ?></li>
-            <li><?php _e('On NEW site: Install and activate the plugin', 'wc-pickup-manager'); ?></li>
-            <li><?php _e('Go to Pickup Locations → Import/Export', 'wc-pickup-manager'); ?></li>
-            <li><?php _e('Upload the JSON file and click "Import Locations"', 'wc-pickup-manager'); ?></li>
+            <li><?php esc_html_e('On OLD site: Go to Pickup Locations → Import/Export', 'pickup-location-manager'); ?></li>
+            <li><?php esc_html_e('Click "Export All Locations" and save the JSON file', 'pickup-location-manager'); ?></li>
+            <li><?php esc_html_e('On NEW site: Install and activate the plugin', 'pickup-location-manager'); ?></li>
+            <li><?php esc_html_e('Go to Pickup Locations → Import/Export', 'pickup-location-manager'); ?></li>
+            <li><?php esc_html_e('Upload the JSON file and click "Import Locations"', 'pickup-location-manager'); ?></li>
         </ol>
 
-        <h3><?php _e('💾 Backup & Restore', 'wc-pickup-manager'); ?></h3>
+        <h3><?php esc_html_e('💾 Backup & Restore', 'pickup-location-manager'); ?></h3>
         <ol>
-            <li><?php _e('Export your locations regularly as backup', 'wc-pickup-manager'); ?></li>
-            <li><?php _e('Store the JSON file in a safe location', 'wc-pickup-manager'); ?></li>
-            <li><?php _e('To restore: Import using "Replace all" mode', 'wc-pickup-manager'); ?></li>
+            <li><?php esc_html_e('Export your locations regularly as backup', 'pickup-location-manager'); ?></li>
+            <li><?php esc_html_e('Store the JSON file in a safe location', 'pickup-location-manager'); ?></li>
+            <li><?php esc_html_e('To restore: Import using "Replace all" mode', 'pickup-location-manager'); ?></li>
         </ol>
 
-        <h3><?php _e('📋 File Format Example', 'wc-pickup-manager'); ?></h3>
+        <h3><?php esc_html_e('📋 File Format Example', 'pickup-location-manager'); ?></h3>
         <pre style="background: #f5f5f5; padding: 15px; overflow-x: auto; font-size: 12px;">{
   "version": "2.1",
   "export_date": "2025-11-19 14:16:00",

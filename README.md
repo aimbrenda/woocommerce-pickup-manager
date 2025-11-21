@@ -1,7 +1,7 @@
 # Pickup Location Manager
 
-![Version](https://img.shields.io/badge/version-2.4.2-blue.svg)
-![WordPress](https://img.shields.io/badge/WordPress-5.8%2B-blue.svg)
+![Version](https://img.shields.io/badge/version-2.4.3-blue.svg)
+![WordPress](https://img.shields.io/badge/WordPress-6.2%2B-blue.svg)
 ![WooCommerce](https://img.shields.io/badge/WooCommerce-6.0%2B-purple.svg)
 ![PHP](https://img.shields.io/badge/PHP-7.4%2B-777BB4.svg)
 ![License](https://img.shields.io/badge/license-GPL--3.0-green.svg)
@@ -239,7 +239,7 @@ add_filter('wc_pickup_manager_location_fee', function($fee, $location_id) {
 
 The plugin is translation-ready and uses WordPress i18n functions.
 
-**Text Domain**: `wc-pickup-manager`
+**Text Domain**: `pickup-location-manager`
 
 To translate:
 1. Use [Poedit](https://poedit.net/) or [Loco Translate](https://wordpress.org/plugins/loco-translate/)

@@ -43,33 +43,30 @@ class WC_Pickup_Manager_Checkout {
     }
 
     private function is_pickup_enabled() {
-        // Check if pickup is globally enabled
         $enabled = get_option('wc_pickup_manager_enabled', 'yes');
         if ($enabled !== 'yes') {
             return false;
         }
 
-        // Check if there are any active locations
         $locations = $this->db->get_all_locations(true);
         return !empty($locations);
     }
 
     public function enqueue_frontend_assets() {
         if (is_checkout() && $this->is_pickup_enabled()) {
-            wp_enqueue_style('flatpickr', 'https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css');
-            wp_enqueue_script('flatpickr', 'https://cdn.jsdelivr.net/npm/flatpickr');
-            wp_enqueue_style('wc-pickup-manager-checkout', WC_PICKUP_MANAGER_PLUGIN_URL . 'assets/css/checkout.css');
-            wp_enqueue_script('wc-pickup-manager-checkout', WC_PICKUP_MANAGER_PLUGIN_URL . 'assets/js/checkout.js', array('jquery', 'flatpickr'), false, true);
+            wp_enqueue_style('flatpickr', WC_PICKUP_MANAGER_PLUGIN_URL . 'assets/lib/flatpickr/flatpickr.min.css', array(), '4.6.13');
+            wp_enqueue_script('flatpickr', WC_PICKUP_MANAGER_PLUGIN_URL . 'assets/lib/flatpickr/flatpickr.min.js', array('jquery'), '4.6.13', true);
+            wp_enqueue_style('wc-pickup-manager-checkout', WC_PICKUP_MANAGER_PLUGIN_URL . 'assets/css/checkout.css', array(), WC_PICKUP_MANAGER_VERSION);
+            wp_enqueue_script('wc-pickup-manager-checkout', WC_PICKUP_MANAGER_PLUGIN_URL . 'assets/js/checkout.js', array('jquery', 'flatpickr'), WC_PICKUP_MANAGER_VERSION, true);
             wp_localize_script('wc-pickup-manager-checkout', 'wcPickupManager', array(
                 'ajaxUrl' => admin_url('admin-ajax.php'), 
                 'nonce' => wp_create_nonce('pickup_dates_nonce'),
-                'viewMapText' => __('View on Map', 'wc-pickup-manager')
+                'viewMapText' => __('View on Map', 'pickup-location-manager')
             ));
         }
     }
 
     public function add_pickup_fields($checkout) {
-        // Check if pickup is enabled
         if (!$this->is_pickup_enabled()) {
             return;
         }
@@ -77,23 +74,22 @@ class WC_Pickup_Manager_Checkout {
         $locations = $this->db->get_all_locations(true);
         if (empty($locations)) return;
 
-        echo '<div id="pickup_location_fields"><h3>' . __('Pickup Information', 'wc-pickup-manager') . '</h3>';
+        echo '<div id="pickup_location_fields"><h3>' . esc_html__('Pickup Information', 'pickup-location-manager') . '</h3>';
 
-        $location_options = array('' => __('Select a location', 'wc-pickup-manager'));
-        foreach ($locations as $location) {
-            // Show fee in dropdown only if > 0
-            if ($location->pickup_fee > 0) {
-                $fee_text = ' (+' . wc_price($location->pickup_fee) . ')';
+        $location_options = array('' => __('Select a location', 'pickup-location-manager'));
+        foreach ($locations as $wc_pickup_location) {
+            if ($wc_pickup_location->pickup_fee > 0) {
+                $fee_text = ' (+' . wp_kses_post(wc_price($wc_pickup_location->pickup_fee)) . ')';
             } else {
                 $fee_text = '';
             }
-            $location_options[$location->id] = $location->name . $fee_text;
+            $location_options[$wc_pickup_location->id] = $wc_pickup_location->name . $fee_text;
         }
 
         woocommerce_form_field('pickup_location_id', array(
             'type' => 'select',
             'class' => array('form-row-wide'),
-            'label' => __('Pickup Location', 'wc-pickup-manager'),
+            'label' => __('Pickup Location', 'pickup-location-manager'),
             'required' => true,
             'options' => $location_options
         ), $checkout->get_value('pickup_location_id'));
@@ -103,33 +99,33 @@ class WC_Pickup_Manager_Checkout {
         woocommerce_form_field('pickup_date', array(
             'type' => 'text',
             'class' => array('form-row-wide'),
-            'label' => __('Pickup Date', 'wc-pickup-manager'),
+            'label' => __('Pickup Date', 'pickup-location-manager'),
             'required' => true,
             'custom_attributes' => array(
                 'readonly' => 'readonly',
-                'placeholder' => __('Select a location first', 'wc-pickup-manager')
+                'placeholder' => __('Select a location first', 'pickup-location-manager')
             )
         ), $checkout->get_value('pickup_date'));
 
-        echo '<input type="hidden" id="pickup_locations_data" value=\'' . esc_attr(wp_json_encode($locations)) . '\'></div>';
+        echo '<input type="hidden" id="pickup_locations_data" value="' . esc_attr(wp_json_encode($locations)) . '"></div>';
     }
 
     public function ajax_get_location_details() {
         check_ajax_referer('pickup_dates_nonce', 'nonce');
         $location_id = intval($_POST['location_id']);
-        $location = $this->db->get_location($location_id);
+        $wc_pickup_location = $this->db->get_location($location_id);
 
-        if (!$location) {
+        if (!$wc_pickup_location) {
             wp_send_json_error('Invalid location');
         }
 
         $html = '<div>';
-        $html .= '<p style="margin: 5px 0;"><strong>' . __('Address:', 'wc-pickup-manager') . '</strong><br>' . nl2br(esc_html($location->address)) . '</p>';
+        $html .= '<p style="margin: 5px 0;"><strong>' . esc_html__('Address:', 'pickup-location-manager') . '</strong><br>' . nl2br(esc_html($wc_pickup_location->address)) . '</p>';
 
-        if (!empty($location->map_link)) {
-            $html .= '<p style="margin: 10px 0;"><a href="' . esc_url($location->map_link) . '" target="_blank" class="button" style="font-size: 14px;">';
+        if (!empty($wc_pickup_location->map_link)) {
+            $html .= '<p style="margin: 10px 0;"><a href="' . esc_url($wc_pickup_location->map_link) . '" target="_blank" class="button" style="font-size: 14px;">';
             $html .= '<span class="dashicons dashicons-location" style="vertical-align: middle;"></span> ';
-            $html .= __('View on Map', 'wc-pickup-manager');
+            $html .= esc_html__('View on Map', 'pickup-location-manager');
             $html .= '</a></p>';
         }
         $html .= '</div>';
@@ -140,13 +136,13 @@ class WC_Pickup_Manager_Checkout {
     public function ajax_get_available_dates() {
         check_ajax_referer('pickup_dates_nonce', 'nonce');
         $location_id = intval($_POST['location_id']);
-        $location = $this->db->get_location($location_id);
-        if (!$location) wp_send_json_error('Invalid location');
+        $wc_pickup_location = $this->db->get_location($location_id);
+        if (!$wc_pickup_location) wp_send_json_error('Invalid location');
 
         $start = new DateTime();
-        $start->modify('+' . $location->min_delay_hours . ' hours');
+        $start->modify('+' . $wc_pickup_location->min_delay_hours . ' hours');
         $end = new DateTime();
-        $end->modify('+' . $location->max_advance_days . ' days');
+        $end->modify('+' . $wc_pickup_location->max_advance_days . ' days');
 
         $available_dates = $this->db->get_available_dates($location_id, $start->format('Y-m-d'), $end->format('Y-m-d'));
 
@@ -158,62 +154,60 @@ class WC_Pickup_Manager_Checkout {
     }
 
     public function validate_pickup_fields() {
-        // Only validate if pickup is enabled
         if (!$this->is_pickup_enabled()) {
             return;
         }
 
         if (empty($_POST['pickup_location_id'])) {
-            wc_add_notice(__('Please select a pickup location.', 'wc-pickup-manager'), 'error');
+            wc_add_notice(__('Please select a pickup location.', 'pickup-location-manager'), 'error');
         }
         if (empty($_POST['pickup_date'])) {
-            wc_add_notice(__('Please select a pickup date.', 'wc-pickup-manager'), 'error');
+            wc_add_notice(__('Please select a pickup date.', 'pickup-location-manager'), 'error');
         }
 
         if (!empty($_POST['pickup_location_id']) && !empty($_POST['pickup_date'])) {
-            $location = $this->db->get_location(intval($_POST['pickup_location_id']));
-            if (!$location) { 
-                wc_add_notice(__('Invalid pickup location.', 'wc-pickup-manager'), 'error'); 
+            $wc_pickup_location = $this->db->get_location(intval($_POST['pickup_location_id']));
+            if (!$wc_pickup_location) { 
+                wc_add_notice(__('Invalid pickup location.', 'pickup-location-manager'), 'error'); 
                 return; 
             }
 
-            // Check if location is active
-            if (!$location->is_active) {
-                wc_add_notice(__('Selected location is not available.', 'wc-pickup-manager'), 'error');
+            if (!$wc_pickup_location->is_active) {
+                wc_add_notice(__('Selected location is not available.', 'pickup-location-manager'), 'error');
                 return;
             }
 
             $min_date = new DateTime(); 
-            $min_date->modify('+' . $location->min_delay_hours . ' hours');
+            $min_date->modify('+' . $wc_pickup_location->min_delay_hours . ' hours');
             $max_date = new DateTime(); 
-            $max_date->modify('+' . $location->max_advance_days . ' days');
+            $max_date->modify('+' . $wc_pickup_location->max_advance_days . ' days');
             $selected_date = new DateTime(sanitize_text_field($_POST['pickup_date']));
 
             if ($selected_date < $min_date) { 
-                wc_add_notice(__('Selected pickup date is too soon.', 'wc-pickup-manager'), 'error'); 
+                wc_add_notice(__('Selected pickup date is too soon.', 'pickup-location-manager'), 'error'); 
                 return; 
             }
             if ($selected_date > $max_date) { 
-                wc_add_notice(__('Selected pickup date is too far in advance.', 'wc-pickup-manager'), 'error'); 
+                wc_add_notice(__('Selected pickup date is too far in advance.', 'pickup-location-manager'), 'error'); 
                 return; 
             }
 
             $available = $this->db->get_available_dates(intval($_POST['pickup_location_id']), $_POST['pickup_date'], $_POST['pickup_date']);
             if (empty($available)) {
-                wc_add_notice(__('Selected pickup date is not available.', 'wc-pickup-manager'), 'error');
+                wc_add_notice(__('Selected pickup date is not available.', 'pickup-location-manager'), 'error');
             }
         }
     }
 
     public function save_pickup_fields($order_id) {
         if (!empty($_POST['pickup_location_id'])) {
-            $location = $this->db->get_location(intval($_POST['pickup_location_id']));
-            if ($location) {
+            $wc_pickup_location = $this->db->get_location(intval($_POST['pickup_location_id']));
+            if ($wc_pickup_location) {
                 update_post_meta($order_id, '_pickup_location_id', intval($_POST['pickup_location_id']));
-                update_post_meta($order_id, '_pickup_location_name', sanitize_text_field($location->name));
-                update_post_meta($order_id, '_pickup_location_address', sanitize_textarea_field($location->address));
-                update_post_meta($order_id, '_pickup_location_map_link', esc_url_raw($location->map_link));
-                update_post_meta($order_id, '_pickup_location_fee', floatval($location->pickup_fee));
+                update_post_meta($order_id, '_pickup_location_name', sanitize_text_field($wc_pickup_location->name));
+                update_post_meta($order_id, '_pickup_location_address', sanitize_textarea_field($wc_pickup_location->address));
+                update_post_meta($order_id, '_pickup_location_map_link', esc_url_raw($wc_pickup_location->map_link));
+                update_post_meta($order_id, '_pickup_location_fee', floatval($wc_pickup_location->pickup_fee));
             }
         }
         if (!empty($_POST['pickup_date'])) {
@@ -229,12 +223,12 @@ class WC_Pickup_Manager_Checkout {
         if (isset($_POST['post_data'])) parse_str($_POST['post_data'], $post_data);
 
         if (!empty($post_data['pickup_location_id'])) {
-            $location = $this->db->get_location(intval($post_data['pickup_location_id']));
-            if ($location && $location->is_active && $location->pickup_fee > 0) {
-                // Use raw fee value, not formatted HTML
+            $wc_pickup_location = $this->db->get_location(intval($post_data['pickup_location_id']));
+            if ($wc_pickup_location && $wc_pickup_location->is_active && $wc_pickup_location->pickup_fee > 0) {
                 $cart->add_fee(
-                    sprintf(__('Pickup Fee - %s', 'wc-pickup-manager'), $location->name), 
-                    floatval($location->pickup_fee)
+                    /* translators: %s: Location name */
+                    sprintf(__('Pickup Fee - %s', 'pickup-location-manager'), $wc_pickup_location->name), 
+                    floatval($wc_pickup_location->pickup_fee)
                 );
             }
         }
@@ -248,16 +242,16 @@ class WC_Pickup_Manager_Checkout {
         $fee = get_post_meta($order->get_id(), '_pickup_location_fee', true);
 
         if ($name) {
-            echo '<div style="margin-top:20px;padding:10px;background:#f9f9f9;border:1px solid #ddd;"><h3>' . __('Pickup Information', 'wc-pickup-manager') . '</h3>';
-            echo '<p><strong>' . __('Location:', 'wc-pickup-manager') . '</strong> ' . esc_html($name) . '</p>';
-            echo '<p><strong>' . __('Address:', 'wc-pickup-manager') . '</strong><br>' . nl2br(esc_html($address)) . '</p>';
+            echo '<div style="margin-top:20px;padding:10px;background:#f9f9f9;border:1px solid #ddd;"><h3>' . esc_html__('Pickup Information', 'pickup-location-manager') . '</h3>';
+            echo '<p><strong>' . esc_html__('Location:', 'pickup-location-manager') . '</strong> ' . esc_html($name) . '</p>';
+            echo '<p><strong>' . esc_html__('Address:', 'pickup-location-manager') . '</strong><br>' . nl2br(esc_html($address)) . '</p>';
             if (!empty($map_link)) {
-                echo '<p><a href="' . esc_url($map_link) . '" target="_blank" class="button button-small">' . __('View on Map', 'wc-pickup-manager') . '</a></p>';
+                echo '<p><a href="' . esc_url($map_link) . '" target="_blank" class="button button-small">' . esc_html__('View on Map', 'pickup-location-manager') . '</a></p>';
             }
             if ($fee > 0) {
-                echo '<p><strong>' . __('Pickup Fee:', 'wc-pickup-manager') . '</strong> ' . wc_price($fee) . '</p>';
+                echo '<p><strong>' . esc_html__('Pickup Fee:', 'pickup-location-manager') . '</strong> ' . wp_kses_post(wc_price($fee)) . '</p>';
             }
-            echo '<p><strong>' . __('Pickup Date:', 'wc-pickup-manager') . '</strong> ' . esc_html(date_i18n(get_option('date_format'), strtotime($date))) . '</p></div>';
+            echo '<p><strong>' . esc_html__('Pickup Date:', 'pickup-location-manager') . '</strong> ' . esc_html(date_i18n(get_option('date_format'), strtotime($date))) . '</p></div>';
         }
     }
 
@@ -270,21 +264,27 @@ class WC_Pickup_Manager_Checkout {
 
         if ($name) {
             if ($plain_text) {
-                echo "\nPICKUP INFORMATION\nLocation: $name\nAddress: " . str_replace('<br>', ', ', $address) . "\n";
-                if (!empty($map_link)) echo "Map: " . $map_link . "\n";
-                if ($fee > 0) echo "Pickup Fee: " . strip_tags(wc_price($fee)) . "\n";
-                echo "Pickup Date: " . date_i18n(get_option('date_format'), strtotime($date)) . "\n";
-            } else {
-                echo '<h2>' . __('Pickup Information', 'wc-pickup-manager') . '</h2>';
-                echo '<p><strong>' . __('Location:', 'wc-pickup-manager') . '</strong> ' . esc_html($name) . '</p>';
-                echo '<p><strong>' . __('Address:', 'wc-pickup-manager') . '</strong><br>' . nl2br(esc_html($address)) . '</p>';
+                echo "\n" . esc_html__('PICKUP INFORMATION', 'pickup-location-manager') . "\n";
+                echo esc_html__('Location:', 'pickup-location-manager') . ' ' . esc_html($name) . "\n";
+                echo esc_html__('Address:', 'pickup-location-manager') . ' ' . esc_html(str_replace('<br>', ', ', $address)) . "\n";
                 if (!empty($map_link)) {
-                    echo '<p><a href="' . esc_url($map_link) . '" style="color:#2271b1;">' . __('View on Map', 'wc-pickup-manager') . '</a></p>';
+                    echo esc_html__('Map:', 'pickup-location-manager') . ' ' . esc_url($map_link) . "\n";
                 }
                 if ($fee > 0) {
-                    echo '<p><strong>' . __('Pickup Fee:', 'wc-pickup-manager') . '</strong> ' . wc_price($fee) . '</p>';
+                    echo esc_html__('Pickup Fee:', 'pickup-location-manager') . ' ' . esc_html(wp_strip_all_tags(wc_price($fee))) . "\n";
                 }
-                echo '<p><strong>' . __('Pickup Date:', 'wc-pickup-manager') . '</strong> ' . esc_html(date_i18n(get_option('date_format'), strtotime($date))) . '</p>';
+                echo esc_html__('Pickup Date:', 'pickup-location-manager') . ' ' . esc_html(date_i18n(get_option('date_format'), strtotime($date))) . "\n";
+            } else {
+                echo '<h2>' . esc_html__('Pickup Information', 'pickup-location-manager') . '</h2>';
+                echo '<p><strong>' . esc_html__('Location:', 'pickup-location-manager') . '</strong> ' . esc_html($name) . '</p>';
+                echo '<p><strong>' . esc_html__('Address:', 'pickup-location-manager') . '</strong><br>' . nl2br(esc_html($address)) . '</p>';
+                if (!empty($map_link)) {
+                    echo '<p><a href="' . esc_url($map_link) . '" style="color:#2271b1;">' . esc_html__('View on Map', 'pickup-location-manager') . '</a></p>';
+                }
+                if ($fee > 0) {
+                    echo '<p><strong>' . esc_html__('Pickup Fee:', 'pickup-location-manager') . '</strong> ' . wp_kses_post(wc_price($fee)) . '</p>';
+                }
+                echo '<p><strong>' . esc_html__('Pickup Date:', 'pickup-location-manager') . '</strong> ' . esc_html(date_i18n(get_option('date_format'), strtotime($date))) . '</p>';
             }
         }
     }

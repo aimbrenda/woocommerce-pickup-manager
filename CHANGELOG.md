@@ -5,6 +5,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.4.3] - 2025-11-21
+- Implemented main plugin file with initialization and activation hooks.
+- Added classes for database management, admin interface, checkout integration, and import/export functionality.
+- Created readme file detailing plugin features, requirements, and usage.
+
 ## [2.4.2] - 2025-11-21
 - Plugin renaming
 
@@ -62,8 +67,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Version History Summary
 
+- **2.4.3**: Refactoring
 - **2.4.2**: Renaming
-
 - **2.4.1**: Global controls, maps, position settings, max advance booking
 - **2.0.0**: Weekly schedules, date overrides, advanced features
 - **1.0.0**: Initial release with basic functionality
