@@ -14,17 +14,17 @@
                 </tr>
             </thead>
             <tbody>
-                <?php foreach ($locations as $wc_pickup_location): ?>
+                <?php foreach ($locations as $wc_multidrop_scheduler_location): ?>
                     <tr>
-                        <td><strong><?php echo esc_html($wc_pickup_location->name); ?></strong></td>
-                        <td><?php echo esc_html(substr($wc_pickup_location->address, 0, 50)) . (strlen($wc_pickup_location->address) > 50 ? '...' : ''); ?></td>
-                        <td><?php echo wp_kses_post( wc_price($wc_pickup_location->pickup_fee)); ?></td>
-                        <td><?php echo esc_html($wc_pickup_location->min_delay_hours); ?>h</td>
-                        <td><?php echo esc_html($wc_pickup_location->max_advance_days); ?>d</td>
-                        <td><?php if ($wc_pickup_location->is_active): ?><span style="color:green;">● Active</span><?php else: ?><span style="color:#999;">● Inactive</span><?php endif; ?></td>
+                        <td><strong><?php echo esc_html($wc_multidrop_scheduler_location->name); ?></strong></td>
+                        <td><?php echo esc_html(substr($wc_multidrop_scheduler_location->address, 0, 50)) . (strlen($wc_multidrop_scheduler_location->address) > 50 ? '...' : ''); ?></td>
+                        <td><?php echo wp_kses_post( wc_price($wc_multidrop_scheduler_location->pickup_fee)); ?></td>
+                        <td><?php echo esc_html($wc_multidrop_scheduler_location->min_delay_hours); ?>h</td>
+                        <td><?php echo esc_html($wc_multidrop_scheduler_location->max_advance_days); ?>d</td>
+                        <td><?php if ($wc_multidrop_scheduler_location->is_active): ?><span style="color:green;">● Active</span><?php else: ?><span style="color:#999;">● Inactive</span><?php endif; ?></td>
                         <td>
-                            <a href="<?php echo esc_url( admin_url('admin.php?page=pickup-location-add&id=' . $wc_pickup_location->id)); ?>" class="button button-small">Edit</a>
-                            <a href="<?php echo esc_url( wp_nonce_url(admin_url('admin-post.php?action=delete_pickup_location&id=' . $wc_pickup_location->id), 'delete_pickup_location_' . $wc_pickup_location->id)); ?>" 
+                            <a href="<?php echo esc_url( admin_url('admin.php?page=pickup-location-add&id=' . $wc_multidrop_scheduler_location->id)); ?>" class="button button-small">Edit</a>
+                            <a href="<?php echo esc_url( wp_nonce_url(admin_url('admin-post.php?action=delete_pickup_location&id=' . $wc_multidrop_scheduler_location->id), 'delete_pickup_location_' . $wc_multidrop_scheduler_location->id)); ?>" 
                                class="button button-small" onclick="return confirm('Are you sure?');">Delete</a>
                         </td>
                     </tr>

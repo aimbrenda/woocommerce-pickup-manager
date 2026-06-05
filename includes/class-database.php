@@ -1,7 +1,7 @@
 <?php
 if (!defined('ABSPATH')) exit;
 
-class WC_Pickup_Manager_Database {
+class WC_Multidrop_Scheduler_Database {
     private static $instance = null;
     private $locations_table;
     private $overrides_table;
@@ -94,6 +94,23 @@ class WC_Pickup_Manager_Database {
         return $location;
     }
 
+    public function get_active_location($id) {
+        global $wpdb;
+        $location = $wpdb->get_row(
+            $wpdb->prepare(
+                "SELECT * FROM %i WHERE id = %d AND is_active = 1",
+                $this->locations_table,
+                $id
+            )
+        );
+        if ($location) {
+            $location->weekly_schedule = json_decode($location->weekly_schedule, true);
+        }
+        return $location;
+    }
+
+
+
     public function add_location($data) {
         global $wpdb;
         $weekly_schedule = isset($data['weekly_schedule']) ? $data['weekly_schedule'] : array_fill(0, 7, false);
@@ -182,8 +199,8 @@ class WC_Pickup_Manager_Database {
             $override_map[$override->override_date] = $override->is_open;
         }
 
-        $current = new DateTime($start_date);
-        $end = new DateTime($end_date);
+        $current = new DateTime($start_date->format('Y-m-d'));
+        $end = new DateTime($end_date->format('Y-m-d'));
 
         while ($current <= $end) {
             $date_str = $current->format('Y-m-d');

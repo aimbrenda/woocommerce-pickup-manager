@@ -1,6 +1,6 @@
 <?php
 /**
- * Uninstall WooCommerce Pickup Location Manager
+ * Uninstall WooCommerce MultiDrop Scheduler for WooCommerce
  * 
  * This file runs when the plugin is DELETED (not just deactivated)
  * It removes all plugin data from the database
@@ -25,5 +25,5 @@ wp_cache_flush();
 
 // Log uninstallation (optional - remove if you don't want logging)
 if (defined('WP_DEBUG') && WP_DEBUG) {
-    error_log('Pickup Location Manager: Plugin data removed successfully');
+    error_log('MultiDrop Scheduler for WooCommerce: Plugin data removed successfully');
 }

@@ -1,4 +1,4 @@
-# Pickup Location Manager
+# MultiDrop Scheduler for WooCommerce
 
 ![Version](https://img.shields.io/badge/version-2.4.3-blue.svg)
 ![WordPress](https://img.shields.io/badge/WordPress-6.2%2B-blue.svg)
@@ -209,24 +209,24 @@ CREATE TABLE wp_pickup_date_overrides (
 ### Hooks & Filters
 
 #### Actions
-- `wc_pickup_manager_location_saved` - After location is saved
-- `wc_pickup_manager_location_deleted` - After location is deleted
-- `wc_pickup_manager_override_added` - After date override is added
+- `wc_multidrop_scheduler_location_saved` - After location is saved
+- `wc_multidrop_scheduler_location_deleted` - After location is deleted
+- `wc_multidrop_scheduler_override_added` - After date override is added
 
 #### Filters
-- `wc_pickup_manager_available_dates` - Modify available dates
-- `wc_pickup_manager_location_fee` - Modify location fee
-- `wc_pickup_manager_checkout_position` - Change default position
+- `wc_multidrop_scheduler_available_dates` - Modify available dates
+- `wc_multidrop_scheduler_location_fee` - Modify location fee
+- `wc_multidrop_scheduler_checkout_position` - Change default position
 
 Example:
 ```php
 // Change default checkout position
-add_filter('wc_pickup_manager_checkout_position', function($position) {
+add_filter('wc_multidrop_scheduler_checkout_position', function($position) {
     return 'before_customer_details';
 });
 
 // Modify location fee dynamically
-add_filter('wc_pickup_manager_location_fee', function($fee, $location_id) {
+add_filter('wc_multidrop_scheduler_location_fee', function($fee, $location_id) {
     // Add 10% on weekends
     if (date('N') >= 6) {
         return $fee * 1.10;
@@ -239,7 +239,7 @@ add_filter('wc_pickup_manager_location_fee', function($fee, $location_id) {
 
 The plugin is translation-ready and uses WordPress i18n functions.
 
-**Text Domain**: `pickup-location-manager`
+**Text Domain**: `multidrop-scheduler-for-woocommerce`
 
 To translate:
 1. Use [Poedit](https://poedit.net/) or [Loco Translate](https://wordpress.org/plugins/loco-translate/)

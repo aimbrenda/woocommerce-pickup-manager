@@ -10,18 +10,19 @@ jQuery(document).ready(function($) {
         if (!locationId) {
             if (flatpickrInstance) flatpickrInstance.destroy();
             flatpickrInstance = null;
-            $dateInput.val('').attr('placeholder', 'Select a location first');
+            $dateInput.val('').attr('placeholder', wcMultidropScheduler.placeholderSelectLocation);
             $locationDetails.hide();
+            $(document.body).trigger('update_checkout');
             return;
         }
 
         // Fetch and display location details
         $.ajax({
-            url: wcPickupManager.ajaxUrl,
+            url: wcMultidropScheduler.ajaxUrl,
             type: 'POST',
             data: {
                 action: 'get_location_details',
-                nonce: wcPickupManager.nonce,
+                nonce: wcMultidropScheduler.nonce,
                 location_id: locationId
             },
             success: function(response) {
@@ -33,11 +34,11 @@ jQuery(document).ready(function($) {
 
         // Fetch available dates
         $.ajax({
-            url: wcPickupManager.ajaxUrl,
+            url: wcMultidropScheduler.ajaxUrl,
             type: 'POST',
             data: {
                 action: 'get_available_pickup_dates',
-                nonce: wcPickupManager.nonce,
+                nonce: wcMultidropScheduler.nonce,
                 location_id: locationId
             },
             success: function(response) {
@@ -46,21 +47,26 @@ jQuery(document).ready(function($) {
 
                     flatpickrInstance = flatpickr($dateInput[0], {
                         dateFormat: 'Y-m-d',
+                        altInput: true,
+                        altFormat: wcMultidropScheduler.dateFormat || 'Y-m-d',
                         minDate: response.data.minDate || 'today',
                         maxDate: response.data.maxDate,
                         enable: response.data.dates,
-                        locale: { firstDayOfWeek: 1 },
+                        locale: { firstDayOfWeek: wcMultidropScheduler.startOfWeek ? parseInt(wcMultidropScheduler.startOfWeek) : 1 },
                         disableMobile: false,
                         onChange: function() {
                             $(document.body).trigger('update_checkout');
                         }
                     });
 
-                    $dateInput.attr('placeholder', 'Click to select a date');
+                    $dateInput.attr('placeholder', wcMultidropScheduler.placeholderSelectDate);
+                    setTimeout(function() {
+                        $(document.body).trigger('update_checkout');
+                    }, 200);
                 }
             },
             error: function() {
-                alert('Error loading available dates. Please try again.');
+                alert(wcMultidropScheduler.errorLoadDates);
             }
         });
     });

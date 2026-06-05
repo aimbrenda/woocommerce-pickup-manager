@@ -1,7 +1,7 @@
 <?php
 if (!defined('ABSPATH')) exit;
 
-class WC_Pickup_Manager_Admin {
+class WC_Multidrop_Scheduler_Admin {
     private static $instance = null;
     private $db;
 
@@ -13,7 +13,7 @@ class WC_Pickup_Manager_Admin {
     }
 
     private function __construct() {
-        $this->db = WC_Pickup_Manager_Database::get_instance();
+        $this->db = WC_Multidrop_Scheduler_Database::get_instance();
         add_action('admin_menu', array($this, 'add_admin_menu'));
         add_action('admin_enqueue_scripts', array($this, 'enqueue_admin_assets'));
         add_action('admin_post_save_pickup_location', array($this, 'save_location'));
@@ -34,24 +34,24 @@ class WC_Pickup_Manager_Admin {
 
     public function enqueue_admin_assets($hook) {
         if (strpos($hook, 'pickup-location') === false) return;
-        wp_enqueue_style('pickup-location-manager-admin', WC_PICKUP_MANAGER_PLUGIN_URL . 'assets/css/admin.css', array(), WC_PICKUP_MANAGER_VERSION);
-        wp_enqueue_script('pickup-location-manager-admin', WC_PICKUP_MANAGER_PLUGIN_URL . 'assets/js/admin.js', array('jquery'), WC_PICKUP_MANAGER_VERSION, true);
+        wp_enqueue_style('multidrop-scheduler-for-woocommerce-admin', WC_MULTIDROP_SCHEDULER_PLUGIN_URL . 'assets/css/admin.css', array(), WC_MULTIDROP_SCHEDULER_VERSION);
+        wp_enqueue_script('multidrop-scheduler-for-woocommerce-admin', WC_MULTIDROP_SCHEDULER_PLUGIN_URL . 'assets/js/admin.js', array('jquery'), WC_MULTIDROP_SCHEDULER_VERSION, true);
     }
 
     public function render_locations_page() {
         $locations = $this->db->get_all_locations();
-        include WC_PICKUP_MANAGER_PLUGIN_DIR . 'templates/admin/locations-list.php';
+        include WC_MULTIDROP_SCHEDULER_PLUGIN_DIR . 'templates/admin/locations-list.php';
     }
 
     public function render_add_edit_page() {
         $location_id = isset($_GET['id']) ? intval($_GET['id']) : 0;
-        $location = $location_id ? $this->db->get_location($location_id) : null;
-        $overrides = $location_id ? $this->db->get_location_overrides($location_id) : array();
-        include WC_PICKUP_MANAGER_PLUGIN_DIR . 'templates/admin/location-form.php';
+        $wc_multidrop_scheduler_location = $location_id ? $this->db->get_location($location_id) : null;
+        $wc_multidrop_scheduler_overrides = $location_id ? $this->db->get_location_overrides($location_id) : array();
+        include WC_MULTIDROP_SCHEDULER_PLUGIN_DIR . 'templates/admin/location-form.php';
     }
 
     public function render_settings_page() {
-        include WC_PICKUP_MANAGER_PLUGIN_DIR . 'templates/admin/settings.php';
+        include WC_MULTIDROP_SCHEDULER_PLUGIN_DIR . 'templates/admin/settings.php';
     }
 
     public function save_location() {
@@ -65,12 +65,12 @@ class WC_Pickup_Manager_Admin {
         }
 
         $data = array(
-            'name' => $_POST['name'],
-            'address' => $_POST['address'],
-            'map_link' => isset($_POST['map_link']) ? $_POST['map_link'] : '',
-            'pickup_fee' => $_POST['pickup_fee'],
-            'min_delay_hours' => $_POST['min_delay_hours'],
-            'max_advance_days' => $_POST['max_advance_days'],
+            'name' => isset($_POST['name']) ? sanitize_text_field($_POST['name']) : '',
+            'address' => isset($_POST['address']) ? sanitize_textarea_field(wp_unslash($_POST['address'])) : '',
+            'map_link' => isset($_POST['map_link']) ? esc_url_raw(wp_unslash($_POST['map_link'])) : '',
+            'pickup_fee' => isset($_POST['pickup_fee']) ? floatval($_POST['pickup_fee']) : 0,
+            'min_delay_hours' => isset($_POST['min_delay_hours']) ? intval($_POST['min_delay_hours']) : 0,
+            'max_advance_days' => isset($_POST['max_advance_days']) ? intval($_POST['max_advance_days']) : 0,
             'weekly_schedule' => $weekly_schedule,
             'is_active' => isset($_POST['is_active']) ? true : false
         );
@@ -87,7 +87,7 @@ class WC_Pickup_Manager_Admin {
     }
 
     public function delete_location() {
-        check_admin_referer('delete_pickup_location_' . $_GET['id']);
+        check_admin_referer('delete_pickup_location_' . intval($_GET['id']));
         if (!current_user_can('manage_woocommerce')) wp_die('No permission');
         $this->db->delete_location(intval($_GET['id']));
         wp_safe_redirect(add_query_arg(array('page' => 'pickup-locations', 'deleted' => '1'), admin_url('admin.php')));
@@ -105,7 +105,7 @@ class WC_Pickup_Manager_Admin {
     }
 
     public function delete_date_override() {
-        check_admin_referer('delete_override_' . $_GET['override_id']);
+        check_admin_referer('delete_override_' . intval($_GET['override_id']));
         if (!current_user_can('manage_woocommerce')) wp_die('No permission');
         $this->db->delete_override(intval($_GET['override_id']));
         wp_safe_redirect(add_query_arg(array('page' => 'pickup-location-add', 'id' => intval($_GET['location_id']), 
@@ -117,8 +117,8 @@ class WC_Pickup_Manager_Admin {
         check_admin_referer('save_checkout_position');
         if (!current_user_can('manage_woocommerce')) wp_die('No permission');
 
-        update_option('wc_pickup_manager_checkout_position', sanitize_text_field($_POST['checkout_position']));
-        update_option('wc_pickup_manager_enabled', isset($_POST['pickup_enabled']) && $_POST['pickup_enabled'] === 'yes' ? 'yes' : 'no');
+        update_option('wc_multidrop_scheduler_checkout_position', sanitize_text_field($_POST['checkout_position']));
+        update_option('wc_multidrop_scheduler_enabled', isset($_POST['pickup_enabled']) && sanitize_text_field($_POST['pickup_enabled']) === 'yes' ? 'yes' : 'no');
 
         wp_safe_redirect(add_query_arg(array('page' => 'pickup-locations-settings', 'updated' => '1'), admin_url('admin.php')));
         exit;

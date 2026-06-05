@@ -1,0 +1,524 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: MultiDrop Scheduler for WooCommerce\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-11-28 21:28+0000\n"
+"PO-Revision-Date: 2025-12-02 20:48+0000\n"
+"Last-Translator: \n"
+"Language-Team: Nederlands\n"
+"Language: nl-NL\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Loco https://localise.biz/\n"
+"X-Loco-Version: 2.8.0; wp-6.8.3; php-8.2.29\n"
+"X-Domain: multidrop-scheduler-for-woocommerce"
+
+#: templates/admin/import-export.php:152
+msgid "\"Replace all\" mode will delete ALL existing locations"
+msgstr "\"Alles vervangen\"-modus zal ALLE bestaande locaties verwijderen"
+
+#. 1: Import mode (Add/Replace), 2: Number of locations
+#: templates/admin/import-export.php:16
+#, php-format
+msgid "%1$s %2$d location(s) successfully!"
+msgstr "%1$s %2$d locatie(s) succesvol!"
+
+#. %d: Number of locations
+#: templates/admin/import-export.php:60
+msgid "%d location(s)"
+msgstr "%d locatie(s)"
+
+#: templates/admin/settings.php:98
+msgid "1. Before Customer Details (Top)"
+msgstr "1. Voor Klantgegevens (Bovenkant)"
+
+#: templates/admin/settings.php:105
+msgid "2. After Customer Details"
+msgstr "2. Na Klantgegevens"
+
+#: templates/admin/settings.php:109
+msgid "3. Before Order Notes"
+msgstr "3. Voor Bestel Opmerkingen"
+
+#: templates/admin/settings.php:116
+msgid "4. After Order Notes (Default)"
+msgstr "4. Na Bestel Opmerkingen (Standaard)"
+
+#: templates/admin/settings.php:123
+msgid "5. Before Submit Button"
+msgstr "5. Voor Verzend Knop"
+
+#: templates/admin/import-export.php:66
+msgid "Active/inactive status"
+msgstr "Actief/inactief status"
+
+#: templates/admin/import-export.php:124
+msgid "Add to existing"
+msgstr "Toevoegen aan bestaande"
+
+#: multidrop-scheduler-for-woocommerce.php:100 includes/class-checkout.php:134
+#: includes/class-checkout.php:318 includes/class-checkout.php:345
+#: includes/class-checkout.php:356
+msgid "Address:"
+msgstr "Adres:"
+
+#: templates/admin/settings.php:67
+msgid "After Customer Details"
+msgstr "Na Klantgegevens"
+
+#: templates/admin/settings.php:73
+msgid "After Order Notes (Default)"
+msgstr "Na Bestel Opmerkingen (Standaard)"
+
+#. Author of the plugin
+msgid "Alessandro Imbrenda"
+msgstr "Alessandro Imbrenda"
+
+#: templates/admin/import-export.php:63
+msgid "All location settings (name, address, fees, delays)"
+msgstr "Alle locatie-instellingen (naam, adres, kosten, vertragingen)"
+
+#: templates/admin/import-export.php:151
+msgid "Always backup your data before importing"
+msgstr "Maak altijd een back-up van je gegevens voordat je importeert"
+
+#: templates/admin/import-export.php:37
+msgid "An error occurred during import."
+msgstr "Er is een fout opgetreden tijdens het importeren."
+
+#: templates/admin/import-export.php:141
+msgid "Are you sure you want to import? This action cannot be undone."
+msgstr ""
+"Weet je zeker dat je wilt importeren? Deze actie kan niet ongedaan worden "
+"gemaakt."
+
+#: templates/admin/settings.php:64
+msgid "Before Customer Details (Top)"
+msgstr "Voor Klantgegevens (Bovenkant)"
+
+#: templates/admin/settings.php:70
+msgid "Before Order Notes"
+msgstr ""
+"Voor Bestel Opmerkingen\n"
+"\n"
+
+#: templates/admin/settings.php:76
+msgid "Before Submit Button"
+msgstr "Voor Verzend Knop"
+
+#: templates/admin/settings.php:54
+msgid "Checkout Page Settings"
+msgstr "Afrekenpagina Instellingen"
+
+#: templates/admin/settings.php:95
+msgid "Checkout page structure:"
+msgstr "Afrekenpagina structuur:"
+
+#: templates/admin/import-export.php:112
+msgid "Choose a JSON file exported from this plugin"
+msgstr "Kies een JSON-bestand dat geëxporteerd is vanuit deze plugin"
+
+#: templates/admin/settings.php:80
+msgid ""
+"Choose where the pickup location and date fields appear on the checkout page."
+msgstr ""
+"Kies waar de afhaallocatie en datumvelden verschijnen op de afrekenpagina."
+
+#: templates/admin/import-export.php:166
+msgid "Click \"Export All Locations\" and save the JSON file"
+msgstr "Klik op \"Exporteer Alle Locaties\" en sla het JSON-bestand op"
+
+#: includes/class-checkout.php:70
+msgid "Click to select a date"
+msgstr "Klik om een datum te selecteren"
+
+#: templates/admin/settings.php:135
+msgid "Control if pickup is available at all"
+msgstr "Bepaal of afhalen überhaupt beschikbaar is"
+
+#: templates/admin/settings.php:99 templates/admin/settings.php:106
+#: templates/admin/settings.php:110 templates/admin/settings.php:117
+#: templates/admin/settings.php:124
+msgid "Current"
+msgstr "Huidige"
+
+#: templates/admin/settings.php:102
+msgid "Customer Details (Name, Email, etc.)"
+msgstr "Klantgegevens (Naam, E-mail, enz.)"
+
+#: templates/admin/settings.php:45
+msgid "Customers will NOT see pickup options at checkout."
+msgstr "Klanten zullen GEEN afhaalopties zien bij het afrekenen."
+
+#: templates/admin/settings.php:40
+msgid "Customers will see pickup options at checkout."
+msgstr "Klanten zullen afhaalopties zien bij het afrekenen."
+
+#: templates/admin/import-export.php:65
+msgid "Date overrides"
+msgstr "Datum overschrijvingen"
+
+#: templates/admin/import-export.php:153
+msgid "Duplicate names are allowed (locations will have different IDs)"
+msgstr "Dubbele namen zijn toegestaan (locaties hebben verschillende ID's)"
+
+#: templates/admin/settings.php:136
+msgid "Each location can be enabled/disabled separately"
+msgstr "Elke locatie kan afzonderlijk worden in-/uitgeschakeld"
+
+#: templates/admin/settings.php:31
+msgid "Enable pickup location selection at checkout"
+msgstr "Schakel afhaallocatie selectie in bij het afrekenen"
+
+#: templates/admin/settings.php:26
+msgid "Enable Pickup Locations"
+msgstr " Schakel Afhaallocaties in"
+
+#: includes/class-checkout.php:71
+msgid "Error loading available dates. Please try again."
+msgstr "Fout bij het laden van beschikbare datums. Probeer het opnieuw."
+
+#: templates/admin/import-export.php:77
+msgid "Export All Locations"
+msgstr "Exporteer Alle Locaties"
+
+#: templates/admin/import-export.php:53
+msgid ""
+"Export all pickup locations, their settings, and date overrides to a JSON "
+"file."
+msgstr ""
+"Exporteer alle afhaallocaties, hun instellingen en datum overschrijvingen "
+"naar een JSON-bestand."
+
+#: templates/admin/import-export.php:50
+msgid "Export Locations"
+msgstr " Exporteer Locaties"
+
+#: templates/admin/import-export.php:174
+msgid "Export your locations regularly as backup"
+msgstr "Exporteer regelmatig je locaties als back-up"
+
+#: templates/admin/import-export.php:28
+msgid "File upload failed. Please try again."
+msgstr "Bestandsupload mislukt. Probeer het opnieuw."
+
+#: templates/admin/import-export.php:83
+msgid "Filename format: pickup-locations-export-YYYY-MM-DD-HHMMSS.json"
+msgstr "Bestandsnaam formaat: pickup-locations-export-JJJJ-MM-DD-UUMMSS.json"
+
+#: templates/admin/settings.php:21
+msgid "General Settings"
+msgstr "Algemene Instellingen"
+
+#: templates/admin/settings.php:135
+msgid "Global Enable/Disable:"
+msgstr "Globaal In-/Uitschakelen:"
+
+#: templates/admin/import-export.php:168
+msgid "Go to Pickup Locations → Import/Export"
+msgstr "Ga naar Afhaallocaties → Importeren/Exporteren"
+
+#: templates/admin/settings.php:133
+msgid "How It Works"
+msgstr "Hoe Het Werkt"
+
+#. URI of the plugin
+msgid "https://github.com/aimbrenda/woocommerce-pickup-manager"
+msgstr "https://github.com/aimbrenda/woocommerce-pickup-manager"
+
+#: templates/admin/import-export.php:8
+msgid "Import / Export Pickup Locations"
+msgstr " Importeren / Exporteren Afhaallocaties"
+
+#: templates/admin/import-export.php:96 templates/admin/import-export.php:143
+msgid "Import Locations"
+msgstr "Importeer Locaties"
+
+#: templates/admin/import-export.php:118
+msgid "Import Mode"
+msgstr "Importeer Modus"
+
+#: templates/admin/import-export.php:99
+msgid "Import pickup locations from a previously exported JSON file."
+msgstr "Importeer afhaallocaties vanuit een eerder geëxporteerd JSON-bestand."
+
+#: includes/class-import-export.php:26 includes/class-import-export.php:27
+msgid "Import/Export"
+msgstr " Importeren/Exporteren"
+
+#: templates/admin/import-export.php:149
+msgid "Important Notes"
+msgstr "Belangrijke Opmerkingen"
+
+#: templates/admin/import-export.php:14
+msgid "Imported"
+msgstr "Geïmporteerd"
+
+#: templates/admin/settings.php:136
+msgid "Individual Location Active:"
+msgstr "Individuele Locatie Actief:"
+
+#: templates/admin/import-export.php:34
+msgid "Invalid file format. Please use a valid export file."
+msgstr "Ongeldig bestandsformaat. Gebruik een geldig exportbestand."
+
+#: templates/admin/import-export.php:31
+msgid "Invalid JSON file. Please check the file format."
+msgstr "Ongeldig JSON-bestand. Controleer het bestandsformaat."
+
+#: includes/class-checkout.php:202
+msgid "Invalid pickup date format."
+msgstr "Ongeldig ophaaldatumformaat."
+
+#: includes/class-checkout.php:189
+msgid "Invalid pickup location."
+msgstr "Ongeldige afhaallocatie."
+
+#: templates/admin/import-export.php:126
+msgid "Keep current locations and add imported ones"
+msgstr "Behoud huidige locaties en voeg geïmporteerde toe"
+
+#: multidrop-scheduler-for-woocommerce.php:97 includes/class-checkout.php:317
+#: includes/class-checkout.php:344 includes/class-checkout.php:355
+msgid "Location:"
+msgstr "Locatie:"
+
+#. Description of the plugin
+msgid ""
+"Manage multiple pickup locations with weekly schedules, date overrides, and "
+"advance booking limits"
+msgstr ""
+"Beheer meerdere afhaallocaties met weekschema's, datum overschrijvingen en "
+"vooraf boek limieten"
+
+#: includes/class-checkout.php:347
+msgid "Map:"
+msgstr "Kaart:"
+
+#. Name of the plugin
+msgid "MultiDrop Scheduler for WooCommerce"
+msgstr "Afhaallocatie Beheerder"
+
+#: templates/admin/import-export.php:87
+msgid "No locations to export. Please add locations first."
+msgstr "Geen locaties om te exporteren. Voeg eerst locaties toe."
+
+#: templates/admin/import-export.php:167
+msgid "On NEW site: Install and activate the plugin"
+msgstr "Op NIEUWE site: Installeer en activeer de plugin"
+
+#: templates/admin/import-export.php:165
+msgid "On OLD site: Go to Pickup Locations → Import/Export"
+msgstr "Op OUDE site: Ga naar Afhaallocaties → Importeren/Exporteren"
+
+#: templates/admin/settings.php:113
+msgid "Order Notes (Optional message)"
+msgstr " Bestel Opmerkingen (Optioneel bericht)"
+
+#: templates/admin/settings.php:120
+msgid "Order Review (Cart summary)"
+msgstr "Bestelling Overzicht (Winkelwagen samenvatting)"
+
+#. %s: Location name
+#: includes/class-checkout.php:295
+#, php-format
+msgid "Pickup at %s"
+msgstr "Ophalen bij %s"
+
+#: includes/class-checkout.php:113
+msgid "Pickup Date"
+msgstr "Ophaaldatum"
+
+#: includes/class-checkout.php:327 includes/class-checkout.php:352
+#: includes/class-checkout.php:363
+msgid "Pickup Date:"
+msgstr "Ophaaldatum:"
+
+#: multidrop-scheduler-for-woocommerce.php:103
+msgid "Pickup date:"
+msgstr "Ophaaldatum:"
+
+#. %s: Location name
+#: includes/class-checkout.php:267
+#, php-format
+msgid "Pickup Fee - %s"
+msgstr "Afhaalkosten - %s"
+
+#: includes/class-checkout.php:323 includes/class-checkout.php:350
+#: includes/class-checkout.php:361
+msgid "Pickup Fee:"
+msgstr "Afhaalkosten:"
+
+#: templates/admin/settings.php:137
+msgid ""
+"Pickup fields only show if globally enabled AND at least one location is "
+"active"
+msgstr ""
+"Afhaalvelden worden alleen getoond als globaal ingeschakeld EN ten minste "
+"één locatie actief is"
+
+#: templates/admin/settings.php:59
+msgid "Pickup Fields Position"
+msgstr "Afhaalvelden Positie"
+
+#: includes/class-checkout.php:343
+msgid "PICKUP INFORMATION"
+msgstr "AFHAAL INFORMATIE"
+
+#: includes/class-checkout.php:85 includes/class-checkout.php:316
+#: includes/class-checkout.php:354
+msgid "Pickup Information"
+msgstr "Afhaal Informatie"
+
+#: multidrop-scheduler-for-woocommerce.php:96
+msgid "Pickup information"
+msgstr "Afhaal informatie"
+
+#: includes/class-checkout.php:234
+msgid ""
+"Pickup information could not be verified. Please place your order again."
+msgstr ""
+"Ophaalinformatie kon niet worden geverifieerd. Plaats uw bestelling opnieuw."
+
+#: templates/admin/settings.php:44
+msgid "Pickup is currently DISABLED"
+msgstr "Afhalen is momenteel UITGESCHAKELD"
+
+#: templates/admin/settings.php:39
+msgid "Pickup is currently ENABLED"
+msgstr "Afhalen is momenteel INGESCHAKELD"
+
+#: includes/class-checkout.php:102
+msgid "Pickup Location"
+msgstr "Afhaallocatie"
+
+#: templates/admin/settings.php:9
+msgid "Pickup Locations Settings"
+msgstr "Afhaallocaties Instellingen"
+
+#: templates/admin/settings.php:127
+msgid "Place Order Button"
+msgstr "Plaats Bestelling Knop"
+
+#: includes/class-checkout.php:180
+msgid "Please select a pickup date."
+msgstr "Selecteer een ophaaldatum."
+
+#: includes/class-checkout.php:173
+msgid "Please select a pickup location."
+msgstr "Selecteer een afhaallocatie."
+
+#: templates/admin/settings.php:93
+msgid "Position Preview"
+msgstr "Positie Voorbeeld"
+
+#: templates/admin/import-export.php:131
+msgid "Replace all"
+msgstr "Vervang alles"
+
+#: templates/admin/import-export.php:14
+msgid "Replaced all locations and imported"
+msgstr "Alle locaties vervangen en geïmporteerd"
+
+#: templates/admin/settings.php:137
+msgid "Result:"
+msgstr "Resultaat:"
+
+#: templates/admin/settings.php:87
+msgid "Save Settings"
+msgstr "Instellingen Opslaan"
+
+#: includes/class-checkout.php:87
+msgid "Select a location"
+msgstr "Selecteer een locatie"
+
+#: includes/class-checkout.php:69 includes/class-checkout.php:117
+msgid "Select a location first"
+msgstr "Selecteer eerst een locatie"
+
+#: templates/admin/import-export.php:108
+msgid "Select File"
+msgstr "Selecteer Bestand"
+
+#: includes/class-checkout.php:217
+msgid "Selected pickup date is not available."
+msgstr "Geselecteerde ophaaldatum is niet beschikbaar."
+
+#: includes/class-checkout.php:211
+msgid "Selected pickup date is too far in advance."
+msgstr "Geselecteerde ophaaldatum is te ver vooruit."
+
+#: includes/class-checkout.php:207
+msgid "Selected pickup date is too soon."
+msgstr "Geselecteerde ophaaldatum is te snel."
+
+#: templates/admin/settings.php:13
+msgid "Settings saved successfully."
+msgstr "Instellingen succesvol opgeslagen."
+
+#: multidrop-scheduler-for-woocommerce.php:133
+msgid "Shipping to: next step."
+msgstr "Verzenden naar: volgende stap."
+
+#: templates/admin/import-export.php:175
+msgid "Store the JSON file in a safe location"
+msgstr "Bewaar het JSON-bestand op een veilige locatie"
+
+#: templates/admin/import-export.php:176
+msgid "To restore: Import using \"Replace all\" mode"
+msgstr "Om te herstellen: Importeer met \"Vervang alles\" modus"
+
+#: templates/admin/import-export.php:169
+msgid "Upload the JSON file and click \"Import Locations\""
+msgstr "Upload het JSON-bestand en klik op \"Importeer Locaties\""
+
+#: templates/admin/import-export.php:161
+msgid "Usage Guide"
+msgstr "Gebruikershandleiding"
+
+#: includes/class-checkout.php:65 includes/class-checkout.php:139
+#: includes/class-checkout.php:320 includes/class-checkout.php:358
+msgid "View on Map"
+msgstr "Bekijk op Kaart"
+
+#: multidrop-scheduler-for-woocommerce.php:107
+msgid "View on map"
+msgstr "Bekijk op kaart"
+
+#: templates/admin/import-export.php:64
+msgid "Weekly schedules"
+msgstr "Weekschema's"
+
+#: templates/admin/import-export.php:56
+msgid "What gets exported:"
+msgstr "Wat wordt geëxporteerd:"
+
+#: templates/admin/settings.php:34
+msgid ""
+"When disabled, pickup fields will not appear on checkout page. Individual "
+"locations can still be configured."
+msgstr ""
+"Wanneer uitgeschakeld, zullen afhaalvelden niet verschijnen op de "
+"afrekenpagina. Individuele locaties kunnen nog steeds worden geconfigureerd."
+
+#: includes/class-import-export.php:43 includes/class-import-export.php:91
+msgid "You do not have permission to do this."
+msgstr "Je hebt geen toestemming om dit te doen."
+
+#: templates/admin/import-export.php:133
+msgid "⚠️ Delete all current locations and import new ones"
+msgstr "⚠️ Verwijder alle huidige locaties en importeer nieuwe"
+
+#: templates/admin/import-export.php:172
+msgid "💾 Backup & Restore"
+msgstr "💾 Back-up & Herstel"
+
+#: templates/admin/import-export.php:179
+msgid "📋 File Format Example"
+msgstr "📋 Bestandsformaat Voorbeeld"
+
+#: templates/admin/import-export.php:163
+msgid "🔄 Migration Between Sites"
+msgstr "🔄 Migratie Tussen Sites"

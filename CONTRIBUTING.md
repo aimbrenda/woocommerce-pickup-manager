@@ -1,6 +1,6 @@
-# Contributing to WooCommerce Pickup Location Manager
+# Contributing to WooCommerce MultiDrop Scheduler for WooCommerce
 
-First off, thank you for considering contributing to WooCommerce Pickup Location Manager! It's people like you that make this plugin better for everyone.
+First off, thank you for considering contributing to WooCommerce MultiDrop Scheduler for WooCommerce! It's people like you that make this plugin better for everyone.
 
 ## 📋 Table of Contents
 
@@ -136,7 +136,7 @@ We recommend using [Local by Flywheel](https://localwp.com/) for WordPress devel
 
 3. **Activate the Plugin**
    - Go to WordPress admin → Plugins
-   - Activate "WooCommerce Pickup Location Manager"
+   - Activate "WooCommerce MultiDrop Scheduler for WooCommerce"
 
 4. **Create a Development Branch**
    ```bash
@@ -404,15 +404,15 @@ Help translate the plugin into your language:
 
 1. **Using Poedit:**
    - Download [Poedit](https://poedit.net/)
-   - Open `languages/pickup-location-manager.pot`
+   - Open `languages/multidrop-scheduler-for-woocommerce.pot`
    - Translate strings
-   - Save as `pickup-location-manager-{locale}.po`
+   - Save as `multidrop-scheduler-for-woocommerce-{locale}.po`
    - Generate `.mo` file
 
 2. **Using Loco Translate:**
    - Install [Loco Translate](https://wordpress.org/plugins/loco-translate/) plugin
    - Go to Loco Translate → Plugins
-   - Select WooCommerce Pickup Location Manager
+   - Select WooCommerce MultiDrop Scheduler for WooCommerce
    - Create new translation
    - Translate and save
 

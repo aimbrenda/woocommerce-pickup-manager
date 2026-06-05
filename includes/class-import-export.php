@@ -1,7 +1,7 @@
 <?php
 if (!defined('ABSPATH')) exit;
 
-class WC_Pickup_Manager_Import_Export {
+class WC_Multidrop_Scheduler_Import_Export {
     private static $instance = null;
     private $db;
 
@@ -13,7 +13,7 @@ class WC_Pickup_Manager_Import_Export {
     }
 
     private function __construct() {
-        $this->db = WC_Pickup_Manager_Database::get_instance();
+        $this->db = WC_Multidrop_Scheduler_Database::get_instance();
 
         add_action('admin_menu', array($this, 'add_import_export_page'), 20);
         add_action('admin_post_export_pickup_locations', array($this, 'handle_export'));
@@ -23,8 +23,8 @@ class WC_Pickup_Manager_Import_Export {
     public function add_import_export_page() {
         add_submenu_page(
             'pickup-locations',
-            __('Import/Export', 'pickup-location-manager'),
-            __('Import/Export', 'pickup-location-manager'),
+            esc_html__('Import/Export', 'multidrop-scheduler-for-woocommerce'),
+            esc_html__('Import/Export', 'multidrop-scheduler-for-woocommerce'),
             'manage_woocommerce',
             'pickup-locations-import-export',
             array($this, 'render_import_export_page')
@@ -33,36 +33,36 @@ class WC_Pickup_Manager_Import_Export {
 
     public function render_import_export_page() {
         $locations = $this->db->get_all_locations();
-        include WC_PICKUP_MANAGER_PLUGIN_DIR . 'templates/admin/import-export.php';
+        include WC_MULTIDROP_SCHEDULER_PLUGIN_DIR . 'templates/admin/import-export.php';
     }
 
     public function handle_export() {
         check_admin_referer('export_pickup_locations');
 
         if (!current_user_can('manage_woocommerce')) {
-            wp_die(esc_html__('You do not have permission to do this.', 'pickup-location-manager'));
+            wp_die(esc_html__('You do not have permission to do this.', 'multidrop-scheduler-for-woocommerce'));
         }
 
         $locations = $this->db->get_all_locations();
         $export_data = array(
-            'version' => '2.4.3',
+            'version' => '2.4.4',
             'export_date' => current_time('mysql'),
             'site_url' => get_site_url(),
             'locations' => array()
         );
 
-        foreach ($locations as $wc_pickup_location) {
-            $overrides = $this->db->get_location_overrides($wc_pickup_location->id);
+        foreach ($locations as $wc_multidrop_scheduler_location) {
+            $overrides = $this->db->get_location_overrides($wc_multidrop_scheduler_location->id);
 
             $export_data['locations'][] = array(
-                'name' => $wc_pickup_location->name,
-                'address' => $wc_pickup_location->address,
-                'map_link' => $wc_pickup_location->map_link,
-                'pickup_fee' => $wc_pickup_location->pickup_fee,
-                'min_delay_hours' => $wc_pickup_location->min_delay_hours,
-                'max_advance_days' => $wc_pickup_location->max_advance_days,
-                'weekly_schedule' => $wc_pickup_location->weekly_schedule,
-                'is_active' => $wc_pickup_location->is_active,
+                'name' => $wc_multidrop_scheduler_location->name,
+                'address' => $wc_multidrop_scheduler_location->address,
+                'map_link' => $wc_multidrop_scheduler_location->map_link,
+                'pickup_fee' => $wc_multidrop_scheduler_location->pickup_fee,
+                'min_delay_hours' => $wc_multidrop_scheduler_location->min_delay_hours,
+                'max_advance_days' => $wc_multidrop_scheduler_location->max_advance_days,
+                'weekly_schedule' => $wc_multidrop_scheduler_location->weekly_schedule,
+                'is_active' => $wc_multidrop_scheduler_location->is_active,
                 'overrides' => array_map(function($override) {
                     return array(
                         'date' => $override->override_date,
@@ -88,7 +88,7 @@ class WC_Pickup_Manager_Import_Export {
         check_admin_referer('import_pickup_locations');
 
         if (!current_user_can('manage_woocommerce')) {
-            wp_die(esc_html__('You do not have permission to do this.', 'pickup-location-manager'));
+            wp_die(esc_html__('You do not have permission to do this.', 'multidrop-scheduler-for-woocommerce'));
         }
 
         if (!isset($_FILES['import_file']) || $_FILES['import_file']['error'] !== UPLOAD_ERR_OK) {
@@ -118,12 +118,12 @@ class WC_Pickup_Manager_Import_Export {
             exit;
         }
 
-        $import_mode = isset($_POST['import_mode']) ? $_POST['import_mode'] : 'add';
+        $import_mode = isset($_POST['import_mode']) ? sanitize_text_field($_POST['import_mode']) : 'add';
 
         if ($import_mode === 'replace') {
             $existing_locations = $this->db->get_all_locations();
-            foreach ($existing_locations as $wc_pickup_location) {
-                $this->db->delete_location($wc_pickup_location->id);
+            foreach ($existing_locations as $wc_multidrop_scheduler_location) {
+                $this->db->delete_location($wc_multidrop_scheduler_location->id);
             }
         }
 
