@@ -1,22 +1,23 @@
 <?php if (!defined('ABSPATH')) exit; ?>
 <div class="wrap">
-    <h1 class="wp-heading-inline">Pickup Locations</h1>
+    <h1 class="wp-heading-inline">Pickup &amp; Delivery Options</h1>
     <a href="<?php echo esc_url( admin_url('admin.php?page=pickup-location-add')); ?>" class="page-title-action">Add New</a>
     <?php if (isset($_GET['added'])): ?><div class="notice notice-success is-dismissible"><p>Location added successfully.</p></div><?php endif; ?>
     <?php if (isset($_GET['deleted'])): ?><div class="notice notice-success is-dismissible"><p>Location deleted successfully.</p></div><?php endif; ?>
     <?php if (empty($locations)): ?>
-        <p>No pickup locations found. Add your first location to get started.</p>
+        <p>No pickup or delivery options found. Add your first option to get started.</p>
     <?php else: ?>
         <table class="wp-list-table widefat fixed striped">
             <thead>
                 <tr>
-                    <th>Name</th><th>Address</th><th>Pickup Fee</th><th>Min. Delay</th><th>Max Advance</th><th>Status</th><th>Actions</th>
+                    <th>Name</th><th>Type</th><th>Address</th><th>Fee</th><th>Min. Delay</th><th>Max Advance</th><th>Status</th><th>Actions</th>
                 </tr>
             </thead>
             <tbody>
                 <?php foreach ($locations as $wc_multidrop_scheduler_location): ?>
                     <tr>
                         <td><strong><?php echo esc_html($wc_multidrop_scheduler_location->name); ?></strong></td>
+                        <td><?php echo esc_html(ucfirst(isset($wc_multidrop_scheduler_location->fulfillment_type) ? $wc_multidrop_scheduler_location->fulfillment_type : 'pickup')); ?></td>
                         <td><?php echo esc_html(substr($wc_multidrop_scheduler_location->address, 0, 50)) . (strlen($wc_multidrop_scheduler_location->address) > 50 ? '...' : ''); ?></td>
                         <td><?php echo wp_kses_post( wc_price($wc_multidrop_scheduler_location->pickup_fee)); ?></td>
                         <td><?php echo esc_html($wc_multidrop_scheduler_location->min_delay_hours); ?>h</td>

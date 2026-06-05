@@ -26,6 +26,7 @@ class WC_Multidrop_Scheduler_Database {
         $locations_sql = "CREATE TABLE IF NOT EXISTS {$wpdb->prefix}pickup_locations (
             id mediumint(9) NOT NULL AUTO_INCREMENT,
             name varchar(255) NOT NULL,
+            fulfillment_type varchar(20) NOT NULL DEFAULT 'pickup',
             address text NOT NULL,
             map_link text,
             pickup_fee decimal(10,2) NOT NULL DEFAULT 0,
@@ -75,6 +76,7 @@ class WC_Multidrop_Scheduler_Database {
 
         foreach ($results as &$location) {
             $location->weekly_schedule = json_decode($location->weekly_schedule, true);
+            $location->fulfillment_type = $this->sanitize_fulfillment_type(isset($location->fulfillment_type) ? $location->fulfillment_type : 'pickup');
         }
         return $results;
     }
@@ -90,6 +92,7 @@ class WC_Multidrop_Scheduler_Database {
         );
         if ($location) {
             $location->weekly_schedule = json_decode($location->weekly_schedule, true);
+            $location->fulfillment_type = $this->sanitize_fulfillment_type(isset($location->fulfillment_type) ? $location->fulfillment_type : 'pickup');
         }
         return $location;
     }
@@ -105,6 +108,7 @@ class WC_Multidrop_Scheduler_Database {
         );
         if ($location) {
             $location->weekly_schedule = json_decode($location->weekly_schedule, true);
+            $location->fulfillment_type = $this->sanitize_fulfillment_type(isset($location->fulfillment_type) ? $location->fulfillment_type : 'pickup');
         }
         return $location;
     }
@@ -114,10 +118,12 @@ class WC_Multidrop_Scheduler_Database {
     public function add_location($data) {
         global $wpdb;
         $weekly_schedule = isset($data['weekly_schedule']) ? $data['weekly_schedule'] : array_fill(0, 7, false);
+        $fulfillment_type = $this->sanitize_fulfillment_type(isset($data['fulfillment_type']) ? $data['fulfillment_type'] : 'pickup');
         return $wpdb->insert(
             $this->locations_table,
             array(
                 'name' => sanitize_text_field($data['name']),
+                'fulfillment_type' => $fulfillment_type,
                 'address' => sanitize_textarea_field($data['address']),
                 'map_link' => isset($data['map_link']) ? esc_url_raw($data['map_link']) : '',
                 'pickup_fee' => floatval($data['pickup_fee']),
@@ -126,17 +132,19 @@ class WC_Multidrop_Scheduler_Database {
                 'weekly_schedule' => wp_json_encode($weekly_schedule),
                 'is_active' => $data['is_active'] ? 1 : 0
             ),
-            array('%s', '%s', '%s', '%f', '%d', '%d', '%s', '%d')
+            array('%s', '%s', '%s', '%s', '%f', '%d', '%d', '%s', '%d')
         );
     }
 
     public function update_location($id, $data) {
         global $wpdb;
         $weekly_schedule = isset($data['weekly_schedule']) ? $data['weekly_schedule'] : array_fill(0, 7, false);
+        $fulfillment_type = $this->sanitize_fulfillment_type(isset($data['fulfillment_type']) ? $data['fulfillment_type'] : 'pickup');
         return $wpdb->update(
             $this->locations_table,
             array(
                 'name' => sanitize_text_field($data['name']),
+                'fulfillment_type' => $fulfillment_type,
                 'address' => sanitize_textarea_field($data['address']),
                 'map_link' => isset($data['map_link']) ? esc_url_raw($data['map_link']) : '',
                 'pickup_fee' => floatval($data['pickup_fee']),
@@ -146,9 +154,14 @@ class WC_Multidrop_Scheduler_Database {
                 'is_active' => $data['is_active'] ? 1 : 0
             ),
             array('id' => $id),
-            array('%s', '%s', '%s', '%f', '%d', '%d', '%s', '%d'),
+            array('%s', '%s', '%s', '%s', '%f', '%d', '%d', '%s', '%d'),
             array('%d')
         );
+    }
+
+    private function sanitize_fulfillment_type($type) {
+        $type = sanitize_key($type);
+        return in_array($type, array('pickup', 'delivery'), true) ? $type : 'pickup';
     }
 
     public function delete_location($id) {

@@ -2,19 +2,103 @@ jQuery(document).ready(function($) {
     let flatpickrInstance = null;
     const $locationSelect = $('#pickup_location_id');
     const $dateInput = $('#pickup_date');
+    const $dateField = $('#pickup_date_field');
     const $locationDetails = $('#pickup_location_details');
+    const $deliveryNote = $('#delivery_note_details');
+    const locationsDataRaw = $('#pickup_locations_data').val();
+    let locationsData = [];
+
+    if (locationsDataRaw) {
+        try {
+            locationsData = JSON.parse(locationsDataRaw);
+        } catch (e) {
+            console.warn('Invalid pickup locations payload, falling back to empty list.', e);
+            locationsData = [];
+        }
+    }
+
+    function getSelectedOption(locationId) {
+        return locationsData.find(function(item) {
+            return String(item.id) === String(locationId);
+        });
+    }
+
+    function resetDatePicker() {
+        if (flatpickrInstance) {
+            flatpickrInstance.destroy();
+        }
+        flatpickrInstance = null;
+        $dateInput.val('');
+    }
+
+    function setPickupMode() {
+        $dateField.show().addClass('validate-required');
+        $dateInput.prop('required', true).attr('placeholder', wcMultidropScheduler.placeholderSelectDate);
+        $deliveryNote.hide().empty();
+    }
+
+    function setDeliveryMode() {
+        resetDatePicker();
+        $dateField.hide().removeClass('validate-required');
+        $dateInput.prop('required', false).attr('placeholder', wcMultidropScheduler.placeholderSelectLocation);
+        $locationDetails.hide().empty();
+    }
+
+    function renderDeliveryNote(processingDate) {
+        if (!processingDate) {
+            $deliveryNote.html('<p style="margin:0;">' + wcMultidropScheduler.deliveryNoDate + '</p>').slideDown();
+            return;
+        }
+
+        const noteText = wcMultidropScheduler.deliveryNoteTemplate.replace('%s', processingDate);
+        $deliveryNote.html('<p style="margin:0;">' + noteText + '</p>').slideDown();
+    }
 
     $locationSelect.on('change', function() {
         const locationId = $(this).val();
+        const selectedOption = getSelectedOption(locationId);
 
         if (!locationId) {
-            if (flatpickrInstance) flatpickrInstance.destroy();
-            flatpickrInstance = null;
+            resetDatePicker();
             $dateInput.val('').attr('placeholder', wcMultidropScheduler.placeholderSelectLocation);
-            $locationDetails.hide();
+            $locationDetails.hide().empty();
+            $deliveryNote.hide().empty();
+            $dateField.show();
             $(document.body).trigger('update_checkout');
             return;
         }
+
+        const fulfillmentType = selectedOption?.fulfillment_type || 'pickup';
+
+        if (fulfillmentType === 'delivery') {
+            setDeliveryMode();
+
+            $.ajax({
+                url: wcMultidropScheduler.ajaxUrl,
+                type: 'POST',
+                data: {
+                    action: 'get_location_details',
+                    nonce: wcMultidropScheduler.nonce,
+                    location_id: locationId
+                },
+                success: function(response) {
+                    if (response.success && response.data) {
+                        renderDeliveryNote(response.data.processingDateFormatted || '');
+                    } else {
+                        renderDeliveryNote('');
+                    }
+                    $(document.body).trigger('update_checkout');
+                },
+                error: function() {
+                    renderDeliveryNote('');
+                    $(document.body).trigger('update_checkout');
+                }
+            });
+
+            return;
+        }
+
+        setPickupMode();
 
         // Fetch and display location details
         $.ajax({
@@ -43,7 +127,7 @@ jQuery(document).ready(function($) {
             },
             success: function(response) {
                 if (response.success && response.data.dates) {
-                    if (flatpickrInstance) flatpickrInstance.destroy();
+                    resetDatePicker();
 
                     flatpickrInstance = flatpickr($dateInput[0], {
                         dateFormat: 'Y-m-d',
@@ -52,7 +136,7 @@ jQuery(document).ready(function($) {
                         minDate: response.data.minDate || 'today',
                         maxDate: response.data.maxDate,
                         enable: response.data.dates,
-                        locale: { firstDayOfWeek: wcMultidropScheduler.startOfWeek ? parseInt(wcMultidropScheduler.startOfWeek) : 1 },
+                        locale: { firstDayOfWeek: wcMultidropScheduler.startOfWeek ? Number.parseInt(wcMultidropScheduler.startOfWeek, 10) : 1 },
                         disableMobile: false,
                         onChange: function() {
                             $(document.body).trigger('update_checkout');
