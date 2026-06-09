@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: MultiDrop Scheduler for WooCommerce\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-11-28 21:28+0000\n"
-"PO-Revision-Date: 2025-12-02 20:48+0000\n"
+"PO-Revision-Date: 2026-06-09 13:09+0000\n"
 "Last-Translator: \n"
 "Language-Team: Nederlands\n"
 "Language: nl-NL\n"
@@ -58,9 +58,9 @@ msgstr "Actief/inactief status"
 msgid "Add to existing"
 msgstr "Toevoegen aan bestaande"
 
-#: multidrop-scheduler-for-woocommerce.php:100 includes/class-checkout.php:134
-#: includes/class-checkout.php:318 includes/class-checkout.php:345
-#: includes/class-checkout.php:356
+#: multidrop-scheduler-for-woocommerce.php:131 includes/class-checkout.php:188
+#: includes/class-checkout.php:459 includes/class-checkout.php:515
+#: includes/class-checkout.php:528
 msgid "Address:"
 msgstr "Adres:"
 
@@ -130,7 +130,7 @@ msgstr ""
 msgid "Click \"Export All Locations\" and save the JSON file"
 msgstr "Klik op \"Exporteer Alle Locaties\" en sla het JSON-bestand op"
 
-#: includes/class-checkout.php:70
+#: includes/class-checkout.php:107
 msgid "Click to select a date"
 msgstr "Klik om een datum te selecteren"
 
@@ -160,6 +160,37 @@ msgstr "Klanten zullen afhaalopties zien bij het afrekenen."
 msgid "Date overrides"
 msgstr "Datum overschrijvingen"
 
+#: includes/class-checkout.php:130
+msgid "Delivery"
+msgstr "Bezorging"
+
+#: includes/class-checkout.php:385
+#, php-format
+msgid "Delivery Fee - %s"
+msgstr "Bezorgkosten - %s"
+
+#: includes/class-checkout.php:443 includes/class-checkout.php:490
+#: includes/class-checkout.php:496
+msgid "Delivery Fee:"
+msgstr "Bezorgkosten:"
+
+#: includes/class-checkout.php:487
+msgid "DELIVERY INFORMATION"
+msgstr "BEZORGINFORMATIE"
+
+#: includes/class-checkout.php:440 includes/class-checkout.php:493
+msgid "Delivery Information"
+msgstr "Bezorginformatie"
+
+#: multidrop-scheduler-for-woocommerce.php:94
+msgid "Delivery information"
+msgstr "Bezorginformatie"
+
+#: includes/class-checkout.php:413
+#, php-format
+msgid "Delivery via %s"
+msgstr "Bezorging via %s"
+
 #: templates/admin/import-export.php:153
 msgid "Duplicate names are allowed (locations will have different IDs)"
 msgstr "Dubbele namen zijn toegestaan (locaties hebben verschillende ID's)"
@@ -176,7 +207,7 @@ msgstr "Schakel afhaallocatie selectie in bij het afrekenen"
 msgid "Enable Pickup Locations"
 msgstr " Schakel Afhaallocaties in"
 
-#: includes/class-checkout.php:71
+#: includes/class-checkout.php:108
 msgid "Error loading available dates. Please try again."
 msgstr "Fout bij het laden van beschikbare datums. Probeer het opnieuw."
 
@@ -207,6 +238,18 @@ msgstr "Bestandsupload mislukt. Probeer het opnieuw."
 #: templates/admin/import-export.php:83
 msgid "Filename format: pickup-locations-export-YYYY-MM-DD-HHMMSS.json"
 msgstr "Bestandsnaam formaat: pickup-locations-export-JJJJ-MM-DD-UUMMSS.json"
+
+#: includes/class-checkout.php:125
+msgid "Fulfillment Information"
+msgstr "Bezorginformatie"
+
+#: includes/class-checkout.php:316
+#| msgid ""
+#| "Pickup information could not be verified. Please place your order again."
+msgid ""
+"Fulfillment information could not be verified. Please place your order again."
+msgstr ""
+"Bezorginformatie kon niet worden geverifieerd. Plaats je bestelling opnieuw."
 
 #: templates/admin/settings.php:21
 msgid "General Settings"
@@ -264,24 +307,24 @@ msgstr "Individuele Locatie Actief:"
 msgid "Invalid file format. Please use a valid export file."
 msgstr "Ongeldig bestandsformaat. Gebruik een geldig exportbestand."
 
+#: includes/class-checkout.php:239
+msgid "Invalid fulfillment option."
+msgstr "Ongeldige bezorgoptie."
+
 #: templates/admin/import-export.php:31
 msgid "Invalid JSON file. Please check the file format."
 msgstr "Ongeldig JSON-bestand. Controleer het bestandsformaat."
 
-#: includes/class-checkout.php:202
+#: includes/class-checkout.php:278
 msgid "Invalid pickup date format."
-msgstr "Ongeldig ophaaldatumformaat."
-
-#: includes/class-checkout.php:189
-msgid "Invalid pickup location."
-msgstr "Ongeldige afhaallocatie."
+msgstr "Ongeldig datumformaat voor afhaaldatum."
 
 #: templates/admin/import-export.php:126
 msgid "Keep current locations and add imported ones"
 msgstr "Behoud huidige locaties en voeg geïmporteerde toe"
 
-#: multidrop-scheduler-for-woocommerce.php:97 includes/class-checkout.php:317
-#: includes/class-checkout.php:344 includes/class-checkout.php:355
+#: multidrop-scheduler-for-woocommerce.php:128 includes/class-checkout.php:458
+#: includes/class-checkout.php:514 includes/class-checkout.php:527
 msgid "Location:"
 msgstr "Locatie:"
 
@@ -293,13 +336,21 @@ msgstr ""
 "Beheer meerdere afhaallocaties met weekschema's, datum overschrijvingen en "
 "vooraf boek limieten"
 
-#: includes/class-checkout.php:347
+#: includes/class-checkout.php:517
 msgid "Map:"
 msgstr "Kaart:"
 
 #. Name of the plugin
 msgid "MultiDrop Scheduler for WooCommerce"
 msgstr "Afhaallocatie Beheerder"
+
+#: multidrop-scheduler-for-woocommerce.php:104
+msgid "Next possible delivery day:"
+msgstr "Eerstvolgende mogelijke bezorgdag:"
+
+#: includes/class-checkout.php:110 includes/class-checkout.php:248
+msgid "No delivery day is currently available for this option."
+msgstr "Voor deze optie is momenteel geen bezorgdag beschikbaar."
 
 #: templates/admin/import-export.php:87
 msgid "No locations to export. Please add locations first."
@@ -321,33 +372,39 @@ msgstr " Bestel Opmerkingen (Optioneel bericht)"
 msgid "Order Review (Cart summary)"
 msgstr "Bestelling Overzicht (Winkelwagen samenvatting)"
 
-#. %s: Location name
-#: includes/class-checkout.php:295
+#: includes/class-checkout.php:131
+msgid "Pickup"
+msgstr "Afhaal-"
+
+#: includes/class-checkout.php:143
+msgid "Pickup / Delivery Option"
+msgstr "Afhaal- en bezorgopties"
+
+#: includes/class-checkout.php:414
 #, php-format
 msgid "Pickup at %s"
-msgstr "Ophalen bij %s"
+msgstr "Afhalen bij %s"
 
-#: includes/class-checkout.php:113
+#: includes/class-checkout.php:155
 msgid "Pickup Date"
-msgstr "Ophaaldatum"
+msgstr "Afhaaldatum "
 
-#: includes/class-checkout.php:327 includes/class-checkout.php:352
-#: includes/class-checkout.php:363
+#: includes/class-checkout.php:468 includes/class-checkout.php:523
+#: includes/class-checkout.php:536
 msgid "Pickup Date:"
-msgstr "Ophaaldatum:"
+msgstr "Afhaaldatum:"
 
-#: multidrop-scheduler-for-woocommerce.php:103
+#: multidrop-scheduler-for-woocommerce.php:134
 msgid "Pickup date:"
-msgstr "Ophaaldatum:"
+msgstr "Afhaaldatum:"
 
-#. %s: Location name
-#: includes/class-checkout.php:267
+#: includes/class-checkout.php:386
 #, php-format
 msgid "Pickup Fee - %s"
 msgstr "Afhaalkosten - %s"
 
-#: includes/class-checkout.php:323 includes/class-checkout.php:350
-#: includes/class-checkout.php:361
+#: includes/class-checkout.php:464 includes/class-checkout.php:520
+#: includes/class-checkout.php:533
 msgid "Pickup Fee:"
 msgstr "Afhaalkosten:"
 
@@ -363,24 +420,17 @@ msgstr ""
 msgid "Pickup Fields Position"
 msgstr "Afhaalvelden Positie"
 
-#: includes/class-checkout.php:343
+#: includes/class-checkout.php:513
 msgid "PICKUP INFORMATION"
 msgstr "AFHAAL INFORMATIE"
 
-#: includes/class-checkout.php:85 includes/class-checkout.php:316
-#: includes/class-checkout.php:354
+#: includes/class-checkout.php:457 includes/class-checkout.php:526
 msgid "Pickup Information"
 msgstr "Afhaal Informatie"
 
-#: multidrop-scheduler-for-woocommerce.php:96
+#: multidrop-scheduler-for-woocommerce.php:127
 msgid "Pickup information"
 msgstr "Afhaal informatie"
-
-#: includes/class-checkout.php:234
-msgid ""
-"Pickup information could not be verified. Please place your order again."
-msgstr ""
-"Ophaalinformatie kon niet worden geverifieerd. Plaats uw bestelling opnieuw."
 
 #: templates/admin/settings.php:44
 msgid "Pickup is currently DISABLED"
@@ -390,10 +440,6 @@ msgstr "Afhalen is momenteel UITGESCHAKELD"
 msgid "Pickup is currently ENABLED"
 msgstr "Afhalen is momenteel INGESCHAKELD"
 
-#: includes/class-checkout.php:102
-msgid "Pickup Location"
-msgstr "Afhaallocatie"
-
 #: templates/admin/settings.php:9
 msgid "Pickup Locations Settings"
 msgstr "Afhaallocaties Instellingen"
@@ -402,13 +448,13 @@ msgstr "Afhaallocaties Instellingen"
 msgid "Place Order Button"
 msgstr "Plaats Bestelling Knop"
 
-#: includes/class-checkout.php:180
+#: includes/class-checkout.php:266
 msgid "Please select a pickup date."
-msgstr "Selecteer een ophaaldatum."
+msgstr "Selecteer een afhaaldatum."
 
-#: includes/class-checkout.php:173
-msgid "Please select a pickup location."
-msgstr "Selecteer een afhaallocatie."
+#: includes/class-checkout.php:232
+msgid "Please select a pickup or delivery option."
+msgstr "Selecteer een afhaal- of bezorgoptie."
 
 #: templates/admin/settings.php:93
 msgid "Position Preview"
@@ -430,35 +476,36 @@ msgstr "Resultaat:"
 msgid "Save Settings"
 msgstr "Instellingen Opslaan"
 
-#: includes/class-checkout.php:87
-msgid "Select a location"
-msgstr "Selecteer een locatie"
-
-#: includes/class-checkout.php:69 includes/class-checkout.php:117
-msgid "Select a location first"
+#: includes/class-checkout.php:106 includes/class-checkout.php:159
+#| msgid "Select a location first"
+msgid "Select an option first"
 msgstr "Selecteer eerst een locatie"
 
 #: templates/admin/import-export.php:108
 msgid "Select File"
 msgstr "Selecteer Bestand"
 
-#: includes/class-checkout.php:217
+#: includes/class-checkout.php:127
+msgid "Select pickup or delivery option"
+msgstr "Kies een afhaal- of bezorgoptie."
+
+#: includes/class-checkout.php:297
 msgid "Selected pickup date is not available."
-msgstr "Geselecteerde ophaaldatum is niet beschikbaar."
+msgstr "Geselecteerde afhaaldatum is niet beschikbaar."
 
-#: includes/class-checkout.php:211
+#: includes/class-checkout.php:291
 msgid "Selected pickup date is too far in advance."
-msgstr "Geselecteerde ophaaldatum is te ver vooruit."
+msgstr "Geselecteerde afhaaldatum is te ver vooruit."
 
-#: includes/class-checkout.php:207
+#: includes/class-checkout.php:287
 msgid "Selected pickup date is too soon."
-msgstr "Geselecteerde ophaaldatum is te snel."
+msgstr "Geselecteerde afhaaldatum is te snel."
 
 #: templates/admin/settings.php:13
 msgid "Settings saved successfully."
 msgstr "Instellingen succesvol opgeslagen."
 
-#: multidrop-scheduler-for-woocommerce.php:133
+#: multidrop-scheduler-for-woocommerce.php:164
 msgid "Shipping to: next step."
 msgstr "Verzenden naar: volgende stap."
 
@@ -478,12 +525,12 @@ msgstr "Upload het JSON-bestand en klik op \"Importeer Locaties\""
 msgid "Usage Guide"
 msgstr "Gebruikershandleiding"
 
-#: includes/class-checkout.php:65 includes/class-checkout.php:139
-#: includes/class-checkout.php:320 includes/class-checkout.php:358
+#: includes/class-checkout.php:102 includes/class-checkout.php:193
+#: includes/class-checkout.php:461 includes/class-checkout.php:530
 msgid "View on Map"
 msgstr "Bekijk op Kaart"
 
-#: multidrop-scheduler-for-woocommerce.php:107
+#: multidrop-scheduler-for-woocommerce.php:138
 msgid "View on map"
 msgstr "Bekijk op kaart"
 
@@ -503,9 +550,18 @@ msgstr ""
 "Wanneer uitgeschakeld, zullen afhaalvelden niet verschijnen op de "
 "afrekenpagina. Individuele locaties kunnen nog steeds worden geconfigureerd."
 
-#: includes/class-import-export.php:43 includes/class-import-export.php:91
+#: includes/class-import-export.php:43 includes/class-import-export.php:92
 msgid "You do not have permission to do this."
 msgstr "Je hebt geen toestemming om dit te doen."
+
+#: includes/class-checkout.php:109 includes/class-checkout.php:344
+#, php-format
+msgid ""
+"Your order will be processed on %s based on preparation delay and working "
+"days."
+msgstr ""
+"Je bestelling wordt verwerkt op %s op basis van de voorbereidingstijd en "
+"werkdagen."
 
 #: templates/admin/import-export.php:133
 msgid "⚠️ Delete all current locations and import new ones"

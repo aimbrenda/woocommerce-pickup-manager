@@ -53,6 +53,42 @@ class WC_Multidrop_Scheduler_Checkout {
         return !empty($locations);
     }
 
+    private function get_fulfillment_type($location) {
+        return (isset($location->fulfillment_type) && $location->fulfillment_type === 'delivery') ? 'delivery' : 'pickup';
+    }
+
+    private function is_delivery_location($location) {
+        return $this->get_fulfillment_type($location) === 'delivery';
+    }
+
+    private function get_next_available_date_for_location($location) {
+        if (!$location) {
+            return '';
+        }
+
+        $start = new DateTime();
+        $start->modify('+' . intval($location->min_delay_hours) . ' hours');
+        $end = new DateTime();
+        $end->modify('+' . intval($location->max_advance_days) . ' days');
+
+        $available_dates = $this->db->get_available_dates($location->id, $start, $end);
+        return !empty($available_dates) ? $available_dates[0] : '';
+    }
+
+    private function format_localized_date($date_string) {
+        if (empty($date_string)) {
+            return '';
+        }
+
+        try {
+            $date_obj = new DateTime($date_string);
+        } catch (Exception $e) {
+            return '';
+        }
+
+        return date_i18n(get_option('date_format'), $date_obj->getTimestamp());
+    }
+
     public function enqueue_frontend_assets() {
         if (is_checkout() && $this->is_pickup_enabled()) {
             wp_enqueue_style('flatpickr', WC_MULTIDROP_SCHEDULER_PLUGIN_URL . 'assets/lib/flatpickr/flatpickr.min.css', array(), '4.6.13');
@@ -60,15 +96,17 @@ class WC_Multidrop_Scheduler_Checkout {
             wp_enqueue_style('wc-multidrop-scheduler-checkout', WC_MULTIDROP_SCHEDULER_PLUGIN_URL . 'assets/css/checkout.css', array(), WC_MULTIDROP_SCHEDULER_VERSION);
             wp_enqueue_script('wc-multidrop-scheduler-checkout', WC_MULTIDROP_SCHEDULER_PLUGIN_URL . 'assets/js/checkout.js', array('jquery', 'flatpickr'), WC_MULTIDROP_SCHEDULER_VERSION, true);
             wp_localize_script('wc-multidrop-scheduler-checkout', 'wcMultidropScheduler', array(
-                'ajaxUrl' => admin_url('admin-ajax.php'), 
+                'ajaxUrl' => admin_url('admin-ajax.php'),
                 'nonce' => wp_create_nonce('pickup_dates_nonce'),
                 'viewMapText' => esc_html__('View on Map', 'multidrop-scheduler-for-woocommerce'),
                 'locale' => get_locale(),
                 'dateFormat' => get_option('date_format'),
                 'startOfWeek' => get_option('start_of_week', 0),
-                'placeholderSelectLocation' => esc_html__('Select a location first', 'multidrop-scheduler-for-woocommerce'),
+                'placeholderSelectLocation' => esc_html__('Select an option first', 'multidrop-scheduler-for-woocommerce'),
                 'placeholderSelectDate' => esc_html__('Click to select a date', 'multidrop-scheduler-for-woocommerce'),
-                'errorLoadDates'    => esc_html__('Error loading available dates. Please try again.', 'multidrop-scheduler-for-woocommerce'),
+                'errorLoadDates' => esc_html__('Error loading available dates. Please try again.', 'multidrop-scheduler-for-woocommerce'),
+                'deliveryNoteTemplate' => esc_html__('Your order will be processed on %s based on preparation delay and working days.', 'multidrop-scheduler-for-woocommerce'),
+                'deliveryNoDate' => esc_html__('No delivery day is currently available for this option.', 'multidrop-scheduler-for-woocommerce')
             ));
         }
     }
@@ -79,33 +117,36 @@ class WC_Multidrop_Scheduler_Checkout {
         }
 
         $locations = $this->db->get_all_locations(true);
-        if (empty($locations)) return;
-
-
-        echo '<div id="pickup_location_fields"><h3>' . esc_html__('Pickup Information', 'multidrop-scheduler-for-woocommerce') . '</h3>';
-
-        $location_options = array('' => esc_html__('Select a location', 'multidrop-scheduler-for-woocommerce'));
-        foreach ($locations as $wc_multidrop_scheduler_location) {
-            if ($wc_multidrop_scheduler_location->pickup_fee > 0) {
-                $fee_text = ' (+' . wp_strip_all_tags( wc_price( $wc_multidrop_scheduler_location->pickup_fee ) ) . ')';
-            } else {
-                $fee_text = '';
-            }
-
-            $location_options[$wc_multidrop_scheduler_location->id] = $wc_multidrop_scheduler_location->name . $fee_text;
+        if (empty($locations)) {
+            return;
         }
 
+        echo '<div id="pickup_location_fields"><h3>' . esc_html__('Fulfillment Information', 'multidrop-scheduler-for-woocommerce') . '</h3>';
+
+        $location_options = array('' => esc_html__('Select pickup or delivery option', 'multidrop-scheduler-for-woocommerce'));
+        foreach ($locations as $wc_multidrop_scheduler_location) {
+            $type_prefix = $this->is_delivery_location($wc_multidrop_scheduler_location)
+                ? esc_html__('Delivery', 'multidrop-scheduler-for-woocommerce')
+                : esc_html__('Pickup', 'multidrop-scheduler-for-woocommerce');
+
+            $fee_text = $wc_multidrop_scheduler_location->pickup_fee > 0
+                ? ' (+' . wp_strip_all_tags(wc_price($wc_multidrop_scheduler_location->pickup_fee)) . ')'
+                : '';
+
+            $location_options[$wc_multidrop_scheduler_location->id] = $type_prefix . ' - ' . $wc_multidrop_scheduler_location->name . $fee_text;
+        }
 
         woocommerce_form_field('pickup_location_id', array(
                 'type' => 'select',
                 'class' => array('form-row-wide'),
-                'label' => esc_html__('Pickup Location', 'multidrop-scheduler-for-woocommerce'),
+                'label' => esc_html__('Pickup / Delivery Option', 'multidrop-scheduler-for-woocommerce'),
                 'required' => true,
                 'options' => $location_options
-            ), $checkout->get_value( 'pickup_location_id' )
-        );  
+            ), $checkout->get_value('pickup_location_id')
+        );
 
         echo '<div id="pickup_location_details" style="display:none; margin: 15px 0; padding: 15px; background: #f9f9f9; border-left: 3px solid #2271b1;"></div>';
+        echo '<div id="delivery_note_details" style="display:none; margin: 15px 0; padding: 15px; background: #f9f9f9; border-left: 3px solid #2271b1;"></div>';
 
         woocommerce_form_field('pickup_date', array(
             'type' => 'text',
@@ -114,7 +155,7 @@ class WC_Multidrop_Scheduler_Checkout {
             'required' => true,
             'custom_attributes' => array(
                 'readonly' => 'readonly',
-                'placeholder' => esc_html__('Select a location first', 'multidrop-scheduler-for-woocommerce')
+                'placeholder' => esc_html__('Select an option first', 'multidrop-scheduler-for-woocommerce')
             )
         ), $checkout->get_value('pickup_date'));
 
@@ -130,6 +171,18 @@ class WC_Multidrop_Scheduler_Checkout {
             wp_send_json_error('Invalid location');
         }
 
+        $fulfillment_type = $this->get_fulfillment_type($wc_multidrop_scheduler_location);
+
+        if ($fulfillment_type === 'delivery') {
+            $processing_date = $this->get_next_available_date_for_location($wc_multidrop_scheduler_location);
+            wp_send_json_success(array(
+                'fulfillmentType' => 'delivery',
+                'processingDate' => $processing_date,
+                'processingDateFormatted' => $this->format_localized_date($processing_date),
+                'html' => ''
+            ));
+        }
+
         $html = '<div>';
         $html .= '<p style="margin: 5px 0;"><strong>' . esc_html__('Address:', 'multidrop-scheduler-for-woocommerce') . '</strong><br>' . nl2br(esc_html($wc_multidrop_scheduler_location->address)) . '</p>';
 
@@ -141,14 +194,19 @@ class WC_Multidrop_Scheduler_Checkout {
         }
         $html .= '</div>';
 
-        wp_send_json_success(array('html' => $html));
+        wp_send_json_success(array(
+            'fulfillmentType' => 'pickup',
+            'html' => $html
+        ));
     }
 
     public function ajax_get_available_dates() {
         check_ajax_referer('pickup_dates_nonce', 'nonce');
         $location_id = intval($_POST['location_id']);
         $wc_multidrop_scheduler_location = $this->db->get_location($location_id);
-        if (!$wc_multidrop_scheduler_location) wp_send_json_error('Invalid location');
+        if (!$wc_multidrop_scheduler_location) {
+            wp_send_json_error('Invalid location');
+        }
 
         $start = new DateTime();
         $start->modify('+' . $wc_multidrop_scheduler_location->min_delay_hours . ' hours');
@@ -170,56 +228,79 @@ class WC_Multidrop_Scheduler_Checkout {
         }
 
         if (empty($_POST['pickup_location_id'])) {
-            wc_add_notice(esc_html__('Please select a pickup location.', 'multidrop-scheduler-for-woocommerce'), 'error');
+            wc_add_notice(esc_html__('Please select a pickup or delivery option.', 'multidrop-scheduler-for-woocommerce'), 'error');
             return;
         }
 
-        
+        $location_id = intval($_POST['pickup_location_id']);
+        $wc_multidrop_scheduler_location = $this->db->get_active_location($location_id);
+        if (!$wc_multidrop_scheduler_location) {
+            wc_add_notice(esc_html__('Invalid fulfillment option.', 'multidrop-scheduler-for-woocommerce'), 'error');
+            return;
+        }
+
+        $fulfillment_type = $this->get_fulfillment_type($wc_multidrop_scheduler_location);
+
+        if ($fulfillment_type === 'delivery') {
+            $processing_date = $this->get_next_available_date_for_location($wc_multidrop_scheduler_location);
+            if (empty($processing_date)) {
+                wc_add_notice(esc_html__('No delivery day is currently available for this option.', 'multidrop-scheduler-for-woocommerce'), 'error');
+                return;
+            }
+
+            WC()->session->set('multidrop_scheduler_validated_pickup_data', array(
+                'location_id' => $location_id,
+                'location_name' => $wc_multidrop_scheduler_location->name,
+                'fulfillment_type' => 'delivery',
+                'processing_date' => $processing_date,
+                'pickup_fee' => floatval($wc_multidrop_scheduler_location->pickup_fee),
+                'validated_at' => current_time('mysql'),
+                'is_valid' => true
+            ));
+
+            return;
+        }
 
         if (empty($_POST['pickup_date'])) {
             wc_add_notice(esc_html__('Please select a pickup date.', 'multidrop-scheduler-for-woocommerce'), 'error');
             return;
         }
 
-        $location_id = intval($_POST['pickup_location_id']);
-
-
-        $wc_multidrop_scheduler_location = $this->db->get_active_location($location_id);
-        if (!$wc_multidrop_scheduler_location) { 
-            wc_add_notice(esc_html__('Invalid pickup location.', 'multidrop-scheduler-for-woocommerce'), 'error'); 
-            return; 
-        }
-
-
-        $min_date = new DateTime(); 
+        $min_date = new DateTime();
         $min_date->modify('+' . $wc_multidrop_scheduler_location->min_delay_hours . ' hours');
-        $max_date = new DateTime(); 
+        $max_date = new DateTime();
         $max_date->modify('+' . $wc_multidrop_scheduler_location->max_advance_days . ' days');
-        
-        try{
+
+        try {
             $selected_date = new DateTime(sanitize_text_field($_POST['pickup_date']));
         } catch (Exception $e) {
             wc_add_notice(esc_html__('Invalid pickup date format.', 'multidrop-scheduler-for-woocommerce'), 'error');
             return;
         }
 
-        if ($selected_date < $min_date) { 
-            wc_add_notice(esc_html__('Selected pickup date is too soon.', 'multidrop-scheduler-for-woocommerce'), 'error'); 
-            return; 
+        $selected_day = (clone $selected_date)->setTime(0, 0, 0);
+        $earliest_day = (clone $min_date)->setTime(0, 0, 0);
+        $latest_day = (clone $max_date)->setTime(0, 0, 0);
+
+        if ($selected_day < $earliest_day) {
+            wc_add_notice(esc_html__('Selected pickup date is too soon.', 'multidrop-scheduler-for-woocommerce'), 'error');
+            return;
         }
-        if ($selected_date > $max_date) { 
-            wc_add_notice(esc_html__('Selected pickup date is too far in advance.', 'multidrop-scheduler-for-woocommerce'), 'error'); 
-            return; 
+        if ($selected_day > $latest_day) {
+            wc_add_notice(esc_html__('Selected pickup date is too far in advance.', 'multidrop-scheduler-for-woocommerce'), 'error');
+            return;
         }
 
         $available = $this->db->get_available_dates($location_id, $selected_date, $selected_date);
         if (empty($available)) {
             wc_add_notice(esc_html__('Selected pickup date is not available.', 'multidrop-scheduler-for-woocommerce'), 'error');
+            return;
         }
 
         WC()->session->set('multidrop_scheduler_validated_pickup_data', array(
             'location_id' => $location_id,
             'location_name' => $wc_multidrop_scheduler_location->name,
+            'fulfillment_type' => 'pickup',
             'pickup_date' => $selected_date->format('Y-m-d'),
             'pickup_fee' => floatval($wc_multidrop_scheduler_location->pickup_fee),
             'validated_at' => current_time('mysql'),
@@ -231,24 +312,61 @@ class WC_Multidrop_Scheduler_Checkout {
         $validated_data = WC()->session->get('multidrop_scheduler_validated_pickup_data');
 
         if (!$validated_data || !$validated_data['is_valid']) {
-            wc_add_notice(esc_html__('Pickup information could not be verified. Please place your order again.', 'multidrop-scheduler-for-woocommerce'), 'error');
-            update_post_meta($order_id, '_pickup_error', 'Pickup information validation failed at order save.');  
-            error_log('Pickup Manager: Order ' . $order_id . ' rejected - invalid pickup session data');
+            wc_add_notice(esc_html__('Fulfillment information could not be verified. Please place your order again.', 'multidrop-scheduler-for-woocommerce'), 'error');
+            update_post_meta($order_id, '_pickup_error', 'Fulfillment information validation failed at order save.');
+            error_log('Pickup Manager: Order ' . $order_id . ' rejected - invalid fulfillment session data');
             return;
         }
 
-
         $wc_multidrop_scheduler_location = $this->db->get_active_location($validated_data['location_id']);
-        if ($wc_multidrop_scheduler_location) {
+        if (!$wc_multidrop_scheduler_location) {
+            return;
+        }
+
+        $fulfillment_type = isset($validated_data['fulfillment_type']) ? $validated_data['fulfillment_type'] : 'pickup';
+
+        update_post_meta($order_id, '_fulfillment_type', $fulfillment_type);
+        update_post_meta($order_id, '_fulfillment_location_id', $validated_data['location_id']);
+        update_post_meta($order_id, '_fulfillment_location_name', sanitize_text_field($wc_multidrop_scheduler_location->name));
+
+        if ($fulfillment_type === 'delivery') {
+            $processing_date = isset($validated_data['processing_date']) ? $validated_data['processing_date'] : '';
+            $formatted_processing_date = $this->format_localized_date($processing_date);
+
+            update_post_meta($order_id, '_delivery_location_id', $validated_data['location_id']);
+            update_post_meta($order_id, '_delivery_location_name', sanitize_text_field($wc_multidrop_scheduler_location->name));
+            update_post_meta($order_id, '_delivery_processing_date', $processing_date);
+            update_post_meta(
+                $order_id,
+                '_delivery_note',
+                sprintf(
+                    esc_html__('Your order will be processed on %s based on preparation delay and working days.', 'multidrop-scheduler-for-woocommerce'),
+                    $formatted_processing_date
+                )
+            );
+            update_post_meta($order_id, '_delivery_fee', floatval($wc_multidrop_scheduler_location->pickup_fee));
+
+            delete_post_meta($order_id, '_pickup_location_id');
+            delete_post_meta($order_id, '_pickup_location_name');
+            delete_post_meta($order_id, '_pickup_location_address');
+            delete_post_meta($order_id, '_pickup_location_map_link');
+            delete_post_meta($order_id, '_pickup_location_fee');
+            delete_post_meta($order_id, '_pickup_date');
+        } else {
             update_post_meta($order_id, '_pickup_location_id', $validated_data['location_id']);
             update_post_meta($order_id, '_pickup_location_name', sanitize_text_field($wc_multidrop_scheduler_location->name));
             update_post_meta($order_id, '_pickup_location_address', sanitize_textarea_field($wc_multidrop_scheduler_location->address));
             update_post_meta($order_id, '_pickup_location_map_link', esc_url_raw($wc_multidrop_scheduler_location->map_link));
             update_post_meta($order_id, '_pickup_location_fee', floatval($wc_multidrop_scheduler_location->pickup_fee));
-            update_post_meta($order_id, '_pickup_date', $validated_data['pickup_date']);    
+            update_post_meta($order_id, '_pickup_date', $validated_data['pickup_date']);
+
+            delete_post_meta($order_id, '_delivery_location_id');
+            delete_post_meta($order_id, '_delivery_location_name');
+            delete_post_meta($order_id, '_delivery_processing_date');
+            delete_post_meta($order_id, '_delivery_note');
+            delete_post_meta($order_id, '_delivery_fee');
         }
 
-        // Clear session
         WC()->session->__unset('multidrop_scheduler_validated_pickup_data');
     }
 
@@ -262,11 +380,11 @@ class WC_Multidrop_Scheduler_Checkout {
         if (!empty($post_data['pickup_location_id'])) {
             $wc_multidrop_scheduler_location = $this->db->get_location(intval($post_data['pickup_location_id']));
             if ($wc_multidrop_scheduler_location && $wc_multidrop_scheduler_location->is_active && $wc_multidrop_scheduler_location->pickup_fee > 0) {
-                $cart->add_fee(
-                    /* translators: %s: Location name */
-                    sprintf(esc_html__('Pickup Fee - %s', 'multidrop-scheduler-for-woocommerce'), $wc_multidrop_scheduler_location->name), 
-                    floatval($wc_multidrop_scheduler_location->pickup_fee)
-                );
+                $fee_label = $this->is_delivery_location($wc_multidrop_scheduler_location)
+                    ? sprintf(esc_html__('Delivery Fee - %s', 'multidrop-scheduler-for-woocommerce'), $wc_multidrop_scheduler_location->name)
+                    : sprintf(esc_html__('Pickup Fee - %s', 'multidrop-scheduler-for-woocommerce'), $wc_multidrop_scheduler_location->name);
+
+                $cart->add_fee($fee_label, floatval($wc_multidrop_scheduler_location->pickup_fee));
             }
         }
     }
@@ -287,18 +405,22 @@ class WC_Multidrop_Scheduler_Checkout {
             $wc_multidrop_scheduler_location = $this->db->get_location(intval($post_data['pickup_location_id']));
 
             if ($wc_multidrop_scheduler_location && $wc_multidrop_scheduler_location->is_active) {
+                $fulfillment_type = $this->get_fulfillment_type($wc_multidrop_scheduler_location);
                 $rates = array();
 
+                $label = $fulfillment_type === 'delivery'
+                    ? sprintf(esc_html__('Delivery via %s', 'multidrop-scheduler-for-woocommerce'), $wc_multidrop_scheduler_location->name)
+                    : sprintf(esc_html__('Pickup at %s', 'multidrop-scheduler-for-woocommerce'), $wc_multidrop_scheduler_location->name);
+
                 $rate = new WC_Shipping_Rate(
-                    'pickup_location_' . $wc_multidrop_scheduler_location->id,
-                    /* translators: %s: Location name */
-                    sprintf(esc_html__('Pickup at %s', 'multidrop-scheduler-for-woocommerce'), $wc_multidrop_scheduler_location->name),
+                    $fulfillment_type . '_location_' . $wc_multidrop_scheduler_location->id,
+                    $label,
                     floatval($wc_multidrop_scheduler_location->pickup_fee),
                     array(),
-                    'pickup_location'
+                    $fulfillment_type . '_location'
                 );
 
-                $rates['pickup_location_' . $wc_multidrop_scheduler_location->id] = $rate;
+                $rates[$fulfillment_type . '_location_' . $wc_multidrop_scheduler_location->id] = $rate;
             }
         }
 
@@ -306,11 +428,29 @@ class WC_Multidrop_Scheduler_Checkout {
     }
 
     public function display_pickup_info_admin($order) {
-        $name = get_post_meta($order->get_id(), '_pickup_location_name', true);
-        $address = get_post_meta($order->get_id(), '_pickup_location_address', true);
-        $date = get_post_meta($order->get_id(), '_pickup_date', true);
-        $map_link = get_post_meta($order->get_id(), '_pickup_location_map_link', true);
-        $fee = get_post_meta($order->get_id(), '_pickup_location_fee', true);
+        $order_id = $order->get_id();
+        $fulfillment_type = get_post_meta($order_id, '_fulfillment_type', true);
+
+        if ($fulfillment_type === 'delivery') {
+            $delivery_note = get_post_meta($order_id, '_delivery_note', true);
+            $delivery_fee = get_post_meta($order_id, '_delivery_fee', true);
+
+            if (!empty($delivery_note)) {
+                echo '<div style="margin-top:20px;padding:10px;background:#f9f9f9;border:1px solid #ddd;"><h3>' . esc_html__('Delivery Information', 'multidrop-scheduler-for-woocommerce') . '</h3>';
+                echo '<p>' . esc_html($delivery_note) . '</p>';
+                if ($delivery_fee > 0) {
+                    echo '<p><strong>' . esc_html__('Delivery Fee:', 'multidrop-scheduler-for-woocommerce') . '</strong> ' . wp_kses_post(wc_price($delivery_fee)) . '</p>';
+                }
+                echo '</div>';
+            }
+            return;
+        }
+
+        $name = get_post_meta($order_id, '_pickup_location_name', true);
+        $address = get_post_meta($order_id, '_pickup_location_address', true);
+        $date = get_post_meta($order_id, '_pickup_date', true);
+        $map_link = get_post_meta($order_id, '_pickup_location_map_link', true);
+        $fee = get_post_meta($order_id, '_pickup_location_fee', true);
 
         if ($name) {
             echo '<div style="margin-top:20px;padding:10px;background:#f9f9f9;border:1px solid #ddd;"><h3>' . esc_html__('Pickup Information', 'multidrop-scheduler-for-woocommerce') . '</h3>';
@@ -322,22 +462,51 @@ class WC_Multidrop_Scheduler_Checkout {
             if ($fee > 0) {
                 echo '<p><strong>' . esc_html__('Pickup Fee:', 'multidrop-scheduler-for-woocommerce') . '</strong> ' . wp_kses_post(wc_price($fee)) . '</p>';
             }
-            $date_obj = new DateTime($date);
-            $formatted_date = date_i18n(get_option('date_format'), $date_obj->getTimestamp());
-            echo '<p><strong>' . esc_html__('Pickup Date:', 'multidrop-scheduler-for-woocommerce') . '</strong> ' . esc_html($formatted_date) . '</p></div>';
+            if (!empty($date)) {
+                $formatted_date = $this->format_localized_date($date);
+                echo '<p><strong>' . esc_html__('Pickup Date:', 'multidrop-scheduler-for-woocommerce') . '</strong> ' . esc_html($formatted_date) . '</p>';
+            }
+            echo '</div>';
         }
     }
 
     public function display_pickup_info_email($order, $sent_to_admin, $plain_text, $email) {
-        $name = get_post_meta($order->get_id(), '_pickup_location_name', true);
-        $address = get_post_meta($order->get_id(), '_pickup_location_address', true);
-        $date = get_post_meta($order->get_id(), '_pickup_date', true);
-        $map_link = get_post_meta($order->get_id(), '_pickup_location_map_link', true);
-        $fee = get_post_meta($order->get_id(), '_pickup_location_fee', true);
+        $order_id = $order->get_id();
+        $fulfillment_type = get_post_meta($order_id, '_fulfillment_type', true);
+
+        if ($fulfillment_type === 'delivery') {
+            $delivery_note = get_post_meta($order_id, '_delivery_note', true);
+            $delivery_fee = get_post_meta($order_id, '_delivery_fee', true);
+
+            if (empty($delivery_note)) {
+                return;
+            }
+
+            if ($plain_text) {
+                echo "\n" . esc_html__('DELIVERY INFORMATION', 'multidrop-scheduler-for-woocommerce') . "\n";
+                echo esc_html($delivery_note) . "\n";
+                if ($delivery_fee > 0) {
+                    echo esc_html__('Delivery Fee:', 'multidrop-scheduler-for-woocommerce') . ' ' . esc_html(wp_strip_all_tags(wc_price($delivery_fee))) . "\n";
+                }
+            } else {
+                echo '<h2>' . esc_html__('Delivery Information', 'multidrop-scheduler-for-woocommerce') . '</h2>';
+                echo '<p>' . esc_html($delivery_note) . '</p>';
+                if ($delivery_fee > 0) {
+                    echo '<p><strong>' . esc_html__('Delivery Fee:', 'multidrop-scheduler-for-woocommerce') . '</strong> ' . wp_kses_post(wc_price($delivery_fee)) . '</p>';
+                }
+            }
+
+            return;
+        }
+
+        $name = get_post_meta($order_id, '_pickup_location_name', true);
+        $address = get_post_meta($order_id, '_pickup_location_address', true);
+        $date = get_post_meta($order_id, '_pickup_date', true);
+        $map_link = get_post_meta($order_id, '_pickup_location_map_link', true);
+        $fee = get_post_meta($order_id, '_pickup_location_fee', true);
 
         if ($name) {
-            $date_obj = new DateTime($date);
-            $formatted_date = date_i18n(get_option('date_format'), $date_obj->getTimestamp());
+            $formatted_date = $this->format_localized_date($date);
 
             if ($plain_text) {
                 echo "\n" . esc_html__('PICKUP INFORMATION', 'multidrop-scheduler-for-woocommerce') . "\n";
@@ -349,7 +518,9 @@ class WC_Multidrop_Scheduler_Checkout {
                 if ($fee > 0) {
                     echo esc_html__('Pickup Fee:', 'multidrop-scheduler-for-woocommerce') . ' ' . esc_html(wp_strip_all_tags(wc_price($fee))) . "\n";
                 }
-                echo esc_html__('Pickup Date:', 'multidrop-scheduler-for-woocommerce') . ' ' . esc_html($formatted_date) . "\n";
+                if (!empty($formatted_date)) {
+                    echo esc_html__('Pickup Date:', 'multidrop-scheduler-for-woocommerce') . ' ' . esc_html($formatted_date) . "\n";
+                }
             } else {
                 echo '<h2>' . esc_html__('Pickup Information', 'multidrop-scheduler-for-woocommerce') . '</h2>';
                 echo '<p><strong>' . esc_html__('Location:', 'multidrop-scheduler-for-woocommerce') . '</strong> ' . esc_html($name) . '</p>';
@@ -360,7 +531,9 @@ class WC_Multidrop_Scheduler_Checkout {
                 if ($fee > 0) {
                     echo '<p><strong>' . esc_html__('Pickup Fee:', 'multidrop-scheduler-for-woocommerce') . '</strong> ' . wp_kses_post(wc_price($fee)) . '</p>';
                 }
-                echo '<p><strong>' . esc_html__('Pickup Date:', 'multidrop-scheduler-for-woocommerce') . '</strong> ' . esc_html($formatted_date) . '</p>';
+                if (!empty($formatted_date)) {
+                    echo '<p><strong>' . esc_html__('Pickup Date:', 'multidrop-scheduler-for-woocommerce') . '</strong> ' . esc_html($formatted_date) . '</p>';
+                }
             }
         }
     }

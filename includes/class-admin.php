@@ -66,6 +66,7 @@ class WC_Multidrop_Scheduler_Admin {
 
         $data = array(
             'name' => isset($_POST['name']) ? sanitize_text_field($_POST['name']) : '',
+            'fulfillment_type' => isset($_POST['fulfillment_type']) ? sanitize_key($_POST['fulfillment_type']) : 'pickup',
             'address' => isset($_POST['address']) ? sanitize_textarea_field(wp_unslash($_POST['address'])) : '',
             'map_link' => isset($_POST['map_link']) ? esc_url_raw(wp_unslash($_POST['map_link'])) : '',
             'pickup_fee' => isset($_POST['pickup_fee']) ? floatval($_POST['pickup_fee']) : 0,

@@ -5,6 +5,26 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.0.0] - 2026-06-09
+### Added
+- Added full delivery fulfillment support in addition to pickup.
+- Added admin location option type selection for `pickup` / `delivery`.
+- Added delivery processing date calculation and delivery note rendering.
+- Added thank-you page summary for pickup and delivery orders.
+- Added checkout AJAX handling for option details and available dates.
+- Added shipping-like fulfillment labels and checkout fee integration for selected options.
+- Added cart text override for WooCommerce shipping step.
+
+### Fixed
+- Prevented malformed delivery dates from breaking thank-you rendering.
+- Improved pickup/delivery order meta handling and cleanup.
+- Ensured map link and address output only when present.
+- Improved import/export handling for `fulfillment_type` and overrides.
+
+### Changed
+- Refactored checkout integration to support both pickup and delivery flows.
+- Updated database schema and location storage to include `fulfillment_type`.
+
 ## [2.4.3] - 2025-11-21
 - Implemented main plugin file with initialization and activation hooks.
 - Added classes for database management, admin interface, checkout integration, and import/export functionality.

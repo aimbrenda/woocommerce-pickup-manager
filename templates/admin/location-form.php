@@ -4,6 +4,7 @@ $wc_multidrop_scheduler_is_edit = $wc_multidrop_scheduler_location !== null;
 $wc_multidrop_scheduler_page_title = $wc_multidrop_scheduler_is_edit ? 'Edit Pickup Location' : 'Add Pickup Location';
 $wc_multidrop_scheduler_default_schedule = array(0 => false, 1 => true, 2 => true, 3 => true, 4 => true, 5 => true, 6 => false);
 $wc_multidrop_scheduler_weekly_schedule = $wc_multidrop_scheduler_is_edit && isset($wc_multidrop_scheduler_location->weekly_schedule) ? $wc_multidrop_scheduler_location->weekly_schedule : $wc_multidrop_scheduler_default_schedule;
+$wc_multidrop_scheduler_fulfillment_type = $wc_multidrop_scheduler_is_edit && isset($wc_multidrop_scheduler_location->fulfillment_type) ? $wc_multidrop_scheduler_location->fulfillment_type : 'pickup';
 $wc_multidrop_scheduler_day_names = array(0 => 'Sunday', 1 => 'Monday', 2 => 'Tuesday', 3 => 'Wednesday', 4 => 'Thursday', 5 => 'Friday', 6 => 'Saturday');
 ?>
 <div class="wrap">
@@ -26,9 +27,19 @@ $wc_multidrop_scheduler_day_names = array(0 => 'Sunday', 1 => 'Monday', 2 => 'Tu
                 </td>
             </tr>
             <tr>
-                <th><label for="address">Address *</label></th>
+                <th><label for="fulfillment_type">Option Type *</label></th>
                 <td>
-                    <textarea name="address" id="address" rows="3" class="large-text" required><?php echo $wc_multidrop_scheduler_is_edit ? esc_textarea($wc_multidrop_scheduler_location->address) : ''; ?></textarea>
+                    <select name="fulfillment_type" id="fulfillment_type" required>
+                        <option value="pickup" <?php selected($wc_multidrop_scheduler_fulfillment_type, 'pickup'); ?>>Pickup</option>
+                        <option value="delivery" <?php selected($wc_multidrop_scheduler_fulfillment_type, 'delivery'); ?>>Delivery</option>
+                    </select>
+                    <p class="description">Choose whether this option is used for pickup or delivery.</p>
+                </td>
+            </tr>
+            <tr>
+                <th><label for="address">Address</label></th>
+                <td>
+                    <textarea name="address" id="address" rows="3" class="large-text"><?php echo $wc_multidrop_scheduler_is_edit ? esc_textarea($wc_multidrop_scheduler_location->address) : ''; ?></textarea>
                     <p class="description">Full address shown to customers</p>
                 </td>
             </tr>
@@ -46,17 +57,17 @@ $wc_multidrop_scheduler_day_names = array(0 => 'Sunday', 1 => 'Monday', 2 => 'Tu
                 </td>
             </tr>
             <tr>
-                <th><label for="pickup_fee">Pickup Fee (<?php echo esc_html( get_woocommerce_currency_symbol() ); ?>)</label></th>
+                <th><label for="pickup_fee">Service Fee (<?php echo esc_html( get_woocommerce_currency_symbol() ); ?>)</label></th>
                 <td>
                     <input type="number" name="pickup_fee" id="pickup_fee" step="0.01" min="0" value="<?php echo $wc_multidrop_scheduler_is_edit ? esc_attr($wc_multidrop_scheduler_location->pickup_fee) : '0.00'; ?>">
-                    <p class="description">Additional fee for pickup at this location (0 for free)</p>
+                    <p class="description">Additional fee for this pickup/delivery option (0 for free)</p>
                 </td>
             </tr>
             <tr>
                 <th><label for="min_delay_hours">Minimum Preparation Time</label></th>
                 <td>
                     <input type="number" name="min_delay_hours" id="min_delay_hours" min="0" value="<?php echo $wc_multidrop_scheduler_is_edit ? esc_attr($wc_multidrop_scheduler_location->min_delay_hours) : '24'; ?>"> hours
-                    <p class="description">Minimum time needed before order can be picked up (e.g., 24 = next day, 48 = in 2 days)</p>
+                    <p class="description">Minimum time needed before order can be fulfilled (e.g., 24 = next day, 48 = in 2 days)</p>
                 </td>
             </tr>
             <tr>
@@ -78,7 +89,7 @@ $wc_multidrop_scheduler_day_names = array(0 => 'Sunday', 1 => 'Monday', 2 => 'Tu
                                 </label>
                             <?php endforeach; ?>
                         </div>
-                        <p class="description">Select which days of the week this location is normally open for pickup. You can override specific dates below.</p>
+                        <p class="description">Select which days of the week this option is normally available. You can override specific dates below.</p>
                     </fieldset>
                 </td>
             </tr>

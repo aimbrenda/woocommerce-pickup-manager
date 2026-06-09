@@ -5,7 +5,7 @@
  * Domain Path: /languages
  * Plugin URI: https://github.com/aimbrenda/woocommerce-pickup-manager
  * Description: Manage multiple pickup locations with weekly schedules, date overrides, and advance booking limits
- * Version: 2.4.4
+ * Version: 3.0.0
  * Author: Alessandro Imbrenda
  * Text Domain: multidrop-scheduler-for-woocommerce
  * Requires at least: 6.2
@@ -18,7 +18,7 @@
 
 if (!defined('ABSPATH')) exit;
 
-define('WC_MULTIDROP_SCHEDULER_VERSION', '2.4.4');
+define('WC_MULTIDROP_SCHEDULER_VERSION', '3.0.0');
 define('WC_MULTIDROP_SCHEDULER_PLUGIN_DIR', plugin_dir_path(__FILE__));
 define('WC_MULTIDROP_SCHEDULER_PLUGIN_URL', plugin_dir_url(__FILE__));
 
@@ -57,6 +57,7 @@ class WC_Multidrop_Scheduler {
 
     public function init() {
         WC_Multidrop_Scheduler_Database::get_instance();
+        WC_Multidrop_Scheduler_Database::create_tables();
 
         if (is_admin()) {
             WC_Multidrop_Scheduler_Admin::get_instance();
@@ -79,7 +80,37 @@ function wc_multidrop_scheduler_show_pickup_on_thankyou( $order_id ) {
         return;
     }
 
-    $order   = wc_get_order( $order_id );
+    $fulfillment_type = get_post_meta( $order_id, '_fulfillment_type', true );
+
+    if ( 'delivery' === $fulfillment_type ) {
+        $delivery_note = get_post_meta( $order_id, '_delivery_note', true );
+        $processing_date = get_post_meta( $order_id, '_delivery_processing_date', true );
+
+        if ( ! $delivery_note && ! $processing_date ) {
+            return;
+        }
+
+        echo '<section class="woocommerce-pickup-summary">';
+        echo '<h2>' . esc_html__( 'Delivery information', 'multidrop-scheduler-for-woocommerce' ) . '</h2>';
+
+        if ( $delivery_note ) {
+            echo '<p>' . esc_html( $delivery_note ) . '</p>';
+        }
+
+        if ( $processing_date ) {
+            try {
+                $date_obj = new DateTime( $processing_date );
+                $formatted_processing_date = date_i18n( get_option( 'date_format' ), $date_obj->getTimestamp() );
+                echo '<p><strong>' . esc_html__( 'Next possible delivery day:', 'multidrop-scheduler-for-woocommerce' ) . '</strong> ' . esc_html( $formatted_processing_date ) . '</p>';
+            } catch ( Exception $e ) {
+                // Ignore malformed dates to avoid breaking thank-you rendering.
+            }
+        }
+
+        echo '</section>';
+        return;
+    }
+
     $name    = get_post_meta( $order_id, '_pickup_location_name', true );
     $address = get_post_meta( $order_id, '_pickup_location_address', true );
     $date    = get_post_meta( $order_id, '_pickup_date', true );

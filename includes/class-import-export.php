@@ -45,7 +45,7 @@ class WC_Multidrop_Scheduler_Import_Export {
 
         $locations = $this->db->get_all_locations();
         $export_data = array(
-            'version' => '2.4.4',
+            'version' => '3.0.0',
             'export_date' => current_time('mysql'),
             'site_url' => get_site_url(),
             'locations' => array()
@@ -56,6 +56,7 @@ class WC_Multidrop_Scheduler_Import_Export {
 
             $export_data['locations'][] = array(
                 'name' => $wc_multidrop_scheduler_location->name,
+                'fulfillment_type' => isset($wc_multidrop_scheduler_location->fulfillment_type) ? $wc_multidrop_scheduler_location->fulfillment_type : 'pickup',
                 'address' => $wc_multidrop_scheduler_location->address,
                 'map_link' => $wc_multidrop_scheduler_location->map_link,
                 'pickup_fee' => $wc_multidrop_scheduler_location->pickup_fee,
@@ -131,6 +132,7 @@ class WC_Multidrop_Scheduler_Import_Export {
         foreach ($import_data['locations'] as $location_data) {
             $location_id = $this->db->add_location(array(
                 'name' => sanitize_text_field($location_data['name']),
+                'fulfillment_type' => isset($location_data['fulfillment_type']) ? sanitize_key($location_data['fulfillment_type']) : 'pickup',
                 'address' => sanitize_textarea_field($location_data['address']),
                 'map_link' => isset($location_data['map_link']) ? esc_url_raw($location_data['map_link']) : '',
                 'pickup_fee' => floatval($location_data['pickup_fee']),
