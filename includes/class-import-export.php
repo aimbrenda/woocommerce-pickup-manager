@@ -45,7 +45,7 @@ class WC_Multidrop_Scheduler_Import_Export {
 
         $locations = $this->db->get_all_locations();
         $export_data = array(
-            'version' => '2.4.4',
+            'version' => '3.0.0',
             'export_date' => current_time('mysql'),
             'site_url' => get_site_url(),
             'locations' => array()

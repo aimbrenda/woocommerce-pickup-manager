@@ -3,7 +3,7 @@ Contributors: aimbrenda
 Tags: pickup, locations, woocommerce
 Requires at least: 6.2
 Tested up to: 6.8
-Stable tag: 2.4.4
+Stable tag: 3.0.0
 Requires PHP: 7.4
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.txt

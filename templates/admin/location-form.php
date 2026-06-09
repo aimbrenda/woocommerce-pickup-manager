@@ -37,9 +37,9 @@ $wc_multidrop_scheduler_day_names = array(0 => 'Sunday', 1 => 'Monday', 2 => 'Tu
                 </td>
             </tr>
             <tr>
-                <th><label for="address">Address *</label></th>
+                <th><label for="address">Address</label></th>
                 <td>
-                    <textarea name="address" id="address" rows="3" class="large-text" required><?php echo $wc_multidrop_scheduler_is_edit ? esc_textarea($wc_multidrop_scheduler_location->address) : ''; ?></textarea>
+                    <textarea name="address" id="address" rows="3" class="large-text"><?php echo $wc_multidrop_scheduler_is_edit ? esc_textarea($wc_multidrop_scheduler_location->address) : ''; ?></textarea>
                     <p class="description">Full address shown to customers</p>
                 </td>
             </tr>
