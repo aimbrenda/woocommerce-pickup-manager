@@ -3,6 +3,13 @@ if (!defined('ABSPATH')) exit;
 
 $wc_multidrop_scheduler_current_position = get_option('wc_multidrop_scheduler_checkout_position', 'after_order_notes');
 $wc_multidrop_scheduler_enabled  = get_option('wc_multidrop_scheduler_enabled', 'yes');
+
+$wc_multidrop_email_enabled         = get_option('wc_multidrop_email_enabled', 'no');
+$wc_multidrop_email_recipients      = get_option('wc_multidrop_email_recipients', get_option('admin_email'));
+$wc_multidrop_email_time            = get_option('wc_multidrop_email_time', '08:00');
+$wc_multidrop_email_include_pickup  = get_option('wc_multidrop_email_include_pickup', 'yes');
+$wc_multidrop_email_include_delivery = get_option('wc_multidrop_email_include_delivery', 'yes');
+$wc_multidrop_email_subject         = get_option('wc_multidrop_email_subject', 'Fulfillment summary for {date}');
 ?>
 
 <div class="wrap">
@@ -11,6 +18,18 @@ $wc_multidrop_scheduler_enabled  = get_option('wc_multidrop_scheduler_enabled', 
     <?php if (isset($_GET['updated'])): ?>
         <div class="notice notice-success is-dismissible">
             <p><?php esc_html_e('Settings saved successfully.', 'multidrop-scheduler-for-woocommerce'); ?></p>
+        </div>
+    <?php endif; ?>
+
+    <?php if (isset($_GET['email_sent'])): ?>
+        <div class="notice notice-success is-dismissible">
+            <p><?php esc_html_e('Test email sent successfully.', 'multidrop-scheduler-for-woocommerce'); ?></p>
+        </div>
+    <?php endif; ?>
+
+    <?php if (isset($_GET['email_error'])): ?>
+        <div class="notice notice-error is-dismissible">
+            <p><?php esc_html_e('Could not send test email. Please check recipient settings.', 'multidrop-scheduler-for-woocommerce'); ?></p>
         </div>
     <?php endif; ?>
 
@@ -83,8 +102,75 @@ $wc_multidrop_scheduler_enabled  = get_option('wc_multidrop_scheduler_enabled', 
             </tr>
         </table>
 
+        <hr>
+
+        <h2><?php esc_html_e('Daily Email Notifications', 'multidrop-scheduler-for-woocommerce'); ?></h2>
+        <p><?php esc_html_e('Send a daily summary of all completed pickup and delivery orders for the current day, based on their fulfillment dates.', 'multidrop-scheduler-for-woocommerce'); ?></p>
+
+        <table class="form-table">
+            <tr>
+                <th scope="row">
+                    <label for="wc_multidrop_email_enabled"><?php esc_html_e('Enable Daily Summary Email', 'multidrop-scheduler-for-woocommerce'); ?></label>
+                </th>
+                <td>
+                    <label>
+                        <input type="checkbox" name="wc_multidrop_email_enabled" id="wc_multidrop_email_enabled" value="yes" <?php checked($wc_multidrop_email_enabled, 'yes'); ?>>
+                        <?php esc_html_e('Send a daily email with today’s pickup and delivery orders', 'multidrop-scheduler-for-woocommerce'); ?>
+                    </label>
+                </td>
+            </tr>
+            <tr>
+                <th scope="row">
+                    <label for="wc_multidrop_email_recipients"><?php esc_html_e('Recipient Email Addresses', 'multidrop-scheduler-for-woocommerce'); ?></label>
+                </th>
+                <td>
+                    <input type="text" class="regular-text" name="wc_multidrop_email_recipients" id="wc_multidrop_email_recipients" value="<?php echo esc_attr($wc_multidrop_email_recipients); ?>" />
+                    <p class="description"><?php esc_html_e('Comma-separated list of email addresses.', 'multidrop-scheduler-for-woocommerce'); ?></p>
+                </td>
+            </tr>
+            <tr>
+                <th scope="row">
+                    <label for="wc_multidrop_email_time"><?php esc_html_e('Send Time', 'multidrop-scheduler-for-woocommerce'); ?></label>
+                </th>
+                <td>
+                    <input type="text" class="regular-text" name="wc_multidrop_email_time" id="wc_multidrop_email_time" value="<?php echo esc_attr($wc_multidrop_email_time); ?>" />
+                    <p class="description"><?php esc_html_e('Time in HH:MM (store timezone) when the daily summary should be sent.', 'multidrop-scheduler-for-woocommerce'); ?></p>
+                </td>
+            </tr>
+            <tr>
+                <th scope="row"><?php esc_html_e('Include in Summary', 'multidrop-scheduler-for-woocommerce'); ?></th>
+                <td>
+                    <label style="display:block;">
+                        <input type="checkbox" name="wc_multidrop_email_include_pickup" value="yes" <?php checked($wc_multidrop_email_include_pickup, 'yes'); ?> />
+                        <?php esc_html_e('Include pickup orders', 'multidrop-scheduler-for-woocommerce'); ?>
+                    </label>
+                    <label style="display:block;">
+                        <input type="checkbox" name="wc_multidrop_email_include_delivery" value="yes" <?php checked($wc_multidrop_email_include_delivery, 'yes'); ?> />
+                        <?php esc_html_e('Include delivery orders', 'multidrop-scheduler-for-woocommerce'); ?>
+                    </label>
+                </td>
+            </tr>
+            <tr>
+                <th scope="row">
+                    <label for="wc_multidrop_email_subject"><?php esc_html_e('Email Subject Template', 'multidrop-scheduler-for-woocommerce'); ?></label>
+                </th>
+                <td>
+                    <input type="text" class="regular-text" name="wc_multidrop_email_subject" id="wc_multidrop_email_subject" value="<?php echo esc_attr($wc_multidrop_email_subject); ?>" />
+                    <p class="description"><?php esc_html_e('Use {date} as placeholder for the date.', 'multidrop-scheduler-for-woocommerce'); ?></p>
+                </td>
+            </tr>
+        </table>
+
         <p class="submit">
             <input type="submit" class="button button-primary" value="<?php esc_html_e('Save Settings', 'multidrop-scheduler-for-woocommerce'); ?>">
+        </p>
+    </form>
+
+    <form method="post" action="<?php echo esc_url(admin_url('admin-post.php')); ?>" style="margin-top: 10px;">
+        <?php wp_nonce_field('wc_multidrop_send_test_email'); ?>
+        <input type="hidden" name="action" value="wc_multidrop_send_test_email" />
+        <p>
+            <button type="submit" class="button"><?php esc_html_e('Send Test Email', 'multidrop-scheduler-for-woocommerce'); ?></button>
         </p>
     </form>
 

@@ -121,6 +121,13 @@ class WC_Multidrop_Scheduler_Admin {
         update_option('wc_multidrop_scheduler_checkout_position', sanitize_text_field($_POST['checkout_position']));
         update_option('wc_multidrop_scheduler_enabled', isset($_POST['pickup_enabled']) && sanitize_text_field($_POST['pickup_enabled']) === 'yes' ? 'yes' : 'no');
 
+        update_option('wc_multidrop_email_enabled', isset($_POST['wc_multidrop_email_enabled']) && sanitize_text_field($_POST['wc_multidrop_email_enabled']) === 'yes' ? 'yes' : 'no');
+        update_option('wc_multidrop_email_recipients', isset($_POST['wc_multidrop_email_recipients']) ? sanitize_text_field($_POST['wc_multidrop_email_recipients']) : '');
+        update_option('wc_multidrop_email_time', isset($_POST['wc_multidrop_email_time']) ? sanitize_text_field($_POST['wc_multidrop_email_time']) : '08:00');
+        update_option('wc_multidrop_email_include_pickup', isset($_POST['wc_multidrop_email_include_pickup']) && sanitize_text_field($_POST['wc_multidrop_email_include_pickup']) === 'yes' ? 'yes' : 'no');
+        update_option('wc_multidrop_email_include_delivery', isset($_POST['wc_multidrop_email_include_delivery']) && sanitize_text_field($_POST['wc_multidrop_email_include_delivery']) === 'yes' ? 'yes' : 'no');
+        update_option('wc_multidrop_email_subject', isset($_POST['wc_multidrop_email_subject']) ? sanitize_text_field($_POST['wc_multidrop_email_subject']) : 'Fulfillment summary for {date}');
+
         wp_safe_redirect(add_query_arg(array('page' => 'pickup-locations-settings', 'updated' => '1'), admin_url('admin.php')));
         exit;
     }

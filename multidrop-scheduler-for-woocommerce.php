@@ -5,7 +5,7 @@
  * Domain Path: /languages
  * Plugin URI: https://github.com/aimbrenda/woocommerce-pickup-manager
  * Description: Manage multiple pickup locations with weekly schedules, date overrides, and advance booking limits
- * Version: 3.0.0
+ * Version: 3.1.4
  * Author: Alessandro Imbrenda
  * Text Domain: multidrop-scheduler-for-woocommerce
  * Requires at least: 6.2
@@ -18,26 +18,15 @@
 
 if (!defined('ABSPATH')) exit;
 
-define('WC_MULTIDROP_SCHEDULER_VERSION', '3.0.0');
+define('WC_MULTIDROP_SCHEDULER_VERSION', '3.1.4');
 define('WC_MULTIDROP_SCHEDULER_PLUGIN_DIR', plugin_dir_path(__FILE__));
 define('WC_MULTIDROP_SCHEDULER_PLUGIN_URL', plugin_dir_url(__FILE__));
-
-$wc_multidrop_scheduler_active_plugins = apply_filters(
-    'wc_multidrop_scheduler_active_plugins',
-    (array) get_option( 'wc_multidrop_scheduler_active_plugins', get_option( 'active_plugins', array() ) )
-);
-
-if ( ! in_array( 'woocommerce/woocommerce.php', $wc_multidrop_scheduler_active_plugins, true ) ) {
-    add_action( 'admin_notices', function () {
-        echo '<div class="error"><p>MultiDrop Scheduler for WooCommerce requires WooCommerce to be installed and active.</p></div>';
-    } );
-    return;
-}
 
 require_once WC_MULTIDROP_SCHEDULER_PLUGIN_DIR . 'includes/class-database.php';
 require_once WC_MULTIDROP_SCHEDULER_PLUGIN_DIR . 'includes/class-admin.php';
 require_once WC_MULTIDROP_SCHEDULER_PLUGIN_DIR . 'includes/class-checkout.php';
 require_once WC_MULTIDROP_SCHEDULER_PLUGIN_DIR . 'includes/class-import-export.php';
+require_once WC_MULTIDROP_SCHEDULER_PLUGIN_DIR . 'includes/class-email-notifications.php';
 
 class WC_Multidrop_Scheduler {
     private static $instance = null;
@@ -51,11 +40,24 @@ class WC_Multidrop_Scheduler {
 
     private function __construct() {
         add_action('plugins_loaded', array($this, 'init'));
-        
+
         register_activation_hook(__FILE__, array($this, 'activate'));
     }
 
     public function init() {
+        // Ensure WooCommerce is loaded before initializing
+        if (!class_exists('WooCommerce')) {
+            if (is_admin()) {
+                add_action('admin_notices', function () {
+                    if (!current_user_can('activate_plugins')) {
+                        return;
+                    }
+                    echo '<div class="error"><p>MultiDrop Scheduler for WooCommerce requires WooCommerce to be installed and active.</p></div>';
+                });
+            }
+            return;
+        }
+
         WC_Multidrop_Scheduler_Database::get_instance();
         WC_Multidrop_Scheduler_Database::create_tables();
 
@@ -65,12 +67,28 @@ class WC_Multidrop_Scheduler {
         }
 
         WC_Multidrop_Scheduler_Checkout::get_instance();
+        WC_Multidrop_Scheduler_Email_Notifications::get_instance();
     }
 
     public function activate() {
         WC_Multidrop_Scheduler_Database::create_tables();
+        update_option('wc_multidrop_scheduler_version', WC_MULTIDROP_SCHEDULER_VERSION);
     }
 }
+
+function wc_multidrop_scheduler_maybe_upgrade() {
+    $stored_version = get_option('wc_multidrop_scheduler_version', '0.0.0');
+
+    if ($stored_version === WC_MULTIDROP_SCHEDULER_VERSION) {
+        return;
+    }
+
+    WC_Multidrop_Scheduler_Database::create_tables();
+
+    update_option('wc_multidrop_scheduler_version', WC_MULTIDROP_SCHEDULER_VERSION);
+}
+
+add_action('plugins_loaded', 'wc_multidrop_scheduler_maybe_upgrade', 1);
 
 WC_Multidrop_Scheduler::get_instance();
 
@@ -166,4 +184,3 @@ function wc_multidrop_scheduler_change_shipping_to_text_on_cart( $translated, $t
 
     return $translated;
 }
-
