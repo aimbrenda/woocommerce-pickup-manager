@@ -1,11 +1,10 @@
-<?php
 /**
  * Plugin Name: MultiDrop Scheduler for WooCommerce
  * Text Domain: multidrop-scheduler-for-woocommerce
  * Domain Path: /languages
  * Plugin URI: https://github.com/aimbrenda/woocommerce-pickup-manager
  * Description: Manage multiple pickup locations with weekly schedules, date overrides, and advance booking limits
- * Version: 3.1.3
+ * Version: 3.1.1
  * Author: Alessandro Imbrenda
  * Text Domain: multidrop-scheduler-for-woocommerce
  * Requires at least: 6.2
@@ -18,20 +17,9 @@
 
 if (!defined('ABSPATH')) exit;
 
-define('WC_MULTIDROP_SCHEDULER_VERSION', '3.1.3');
+define('WC_MULTIDROP_SCHEDULER_VERSION', '3.1.1');
 define('WC_MULTIDROP_SCHEDULER_PLUGIN_DIR', plugin_dir_path(__FILE__));
 define('WC_MULTIDROP_SCHEDULER_PLUGIN_URL', plugin_dir_url(__FILE__));
-
-// WooCommerce dependency guard with network/multisite awareness
-if (!class_exists('WooCommerce')) {
-    add_action('admin_notices', function () {
-        if (!current_user_can('activate_plugins')) {
-            return;
-        }
-        echo '<div class="error"><p>MultiDrop Scheduler for WooCommerce requires WooCommerce to be installed and active.</p></div>';
-    });
-    return;
-}
 
 require_once WC_MULTIDROP_SCHEDULER_PLUGIN_DIR . 'includes/class-database.php';
 require_once WC_MULTIDROP_SCHEDULER_PLUGIN_DIR . 'includes/class-admin.php';
@@ -56,6 +44,19 @@ class WC_Multidrop_Scheduler {
     }
 
     public function init() {
+        // Ensure WooCommerce is loaded before initializing
+        if (!class_exists('WooCommerce')) {
+            if (is_admin()) {
+                add_action('admin_notices', function () {
+                    if (!current_user_can('activate_plugins')) {
+                        return;
+                    }
+                    echo '<div class="error"><p>MultiDrop Scheduler for WooCommerce requires WooCommerce to be installed and active.</p></div>';
+                });
+            }
+            return;
+        }
+
         WC_Multidrop_Scheduler_Database::get_instance();
         WC_Multidrop_Scheduler_Database::create_tables();
 
