@@ -1,4 +1,3 @@
-<?php
 /**
  * Plugin Name: MultiDrop Scheduler for WooCommerce
  * Text Domain: multidrop-scheduler-for-woocommerce
@@ -38,6 +37,7 @@ require_once WC_MULTIDROP_SCHEDULER_PLUGIN_DIR . 'includes/class-database.php';
 require_once WC_MULTIDROP_SCHEDULER_PLUGIN_DIR . 'includes/class-admin.php';
 require_once WC_MULTIDROP_SCHEDULER_PLUGIN_DIR . 'includes/class-checkout.php';
 require_once WC_MULTIDROP_SCHEDULER_PLUGIN_DIR . 'includes/class-import-export.php';
+require_once WC_MULTIDROP_SCHEDULER_PLUGIN_DIR . 'includes/class-email-notifications.php';
 
 class WC_Multidrop_Scheduler {
     private static $instance = null;
@@ -51,8 +51,10 @@ class WC_Multidrop_Scheduler {
 
     private function __construct() {
         add_action('plugins_loaded', array($this, 'init'));
-        
+
         register_activation_hook(__FILE__, array($this, 'activate'));
+
+        add_action('plugins_loaded', 'wc_multidrop_scheduler_maybe_upgrade', 1);
     }
 
     public function init() {
@@ -65,11 +67,25 @@ class WC_Multidrop_Scheduler {
         }
 
         WC_Multidrop_Scheduler_Checkout::get_instance();
+        WC_Multidrop_Scheduler_Email_Notifications::get_instance();
     }
 
     public function activate() {
         WC_Multidrop_Scheduler_Database::create_tables();
+        update_option('wc_multidrop_scheduler_version', WC_MULTIDROP_SCHEDULER_VERSION);
     }
+}
+
+function wc_multidrop_scheduler_maybe_upgrade() {
+    $stored_version = get_option('wc_multidrop_scheduler_version', '0.0.0');
+
+    if ($stored_version === WC_MULTIDROP_SCHEDULER_VERSION) {
+        return;
+    }
+
+    WC_Multidrop_Scheduler_Database::create_tables();
+
+    update_option('wc_multidrop_scheduler_version', WC_MULTIDROP_SCHEDULER_VERSION);
 }
 
 WC_Multidrop_Scheduler::get_instance();
@@ -166,4 +182,3 @@ function wc_multidrop_scheduler_change_shipping_to_text_on_cart( $translated, $t
 
     return $translated;
 }
-
