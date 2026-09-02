@@ -5,6 +5,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.1.1] - 2026-09-02
+### Fixed
+- Refined upgrade hook wiring to run as a global plugins_loaded callback instead of from within the main class constructor, ensuring cleaner and more predictable initialization after updates.
+
 ## [3.1.0] - 2026-09-02
 ### Added
 - Daily fulfillment summary email for completed pickup and delivery orders based on fulfillment dates.
@@ -97,6 +101,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Version History Summary
 
+- **3.1.1**: Upgrade hook wiring refinement
 - **3.1.0**: Daily email notifications and upgrade-safe initialization
 - **3.0.0**: Delivery fulfillment support
 - **2.4.3**: Refactoring
