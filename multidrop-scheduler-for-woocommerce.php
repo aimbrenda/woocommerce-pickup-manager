@@ -1,10 +1,11 @@
+<?php
 /**
  * Plugin Name: MultiDrop Scheduler for WooCommerce
  * Text Domain: multidrop-scheduler-for-woocommerce
  * Domain Path: /languages
  * Plugin URI: https://github.com/aimbrenda/woocommerce-pickup-manager
  * Description: Manage multiple pickup locations with weekly schedules, date overrides, and advance booking limits
- * Version: 3.1.2
+ * Version: 3.1.3
  * Author: Alessandro Imbrenda
  * Text Domain: multidrop-scheduler-for-woocommerce
  * Requires at least: 6.2
@@ -17,7 +18,7 @@
 
 if (!defined('ABSPATH')) exit;
 
-define('WC_MULTIDROP_SCHEDULER_VERSION', '3.1.2');
+define('WC_MULTIDROP_SCHEDULER_VERSION', '3.1.3');
 define('WC_MULTIDROP_SCHEDULER_PLUGIN_DIR', plugin_dir_path(__FILE__));
 define('WC_MULTIDROP_SCHEDULER_PLUGIN_URL', plugin_dir_url(__FILE__));
 
