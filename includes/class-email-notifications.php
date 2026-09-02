@@ -89,33 +89,75 @@ class WC_Multidrop_Scheduler_Email_Notifications {
         $this->schedule_daily_email();
     }
 
-    private function get_orders_by_fulfillment_type($type, $date) {
-        $meta_key_date = $type === 'delivery' ? '_delivery_processing_date' : '_pickup_date';
+/**
+ * Get orders by fulfillment type for a specific date.
+ * Uses a date range query + light PHP filter.
+ */
+private function get_orders_by_fulfillment_type($type, $date) {
+    $meta_key_date = $type === 'delivery' ? '_delivery_processing_date' : '_pickup_date';
 
-        $query_args = array(
-            'status' => array('wc-completed'),
-            'limit' => -1,
-            'type'  => 'shop_order',
-            'meta_query' => array(
-                'relation' => 'AND',
-                array(
-                    'key'   => '_fulfillment_type',
-                    'value' => $type,
-                ),
-                array(
-                    'key'   => $meta_key_date,
-                    'value' => $date,
-                ),
+    // Ensure $date is a plain Y-m-d string
+    $date = is_string($date) ? $date : date('Y-m-d', strtotime($date));
+
+    // Build a date range for the whole day (covers any datetime variants)
+    $start_of_day = $date . ' 00:00:00';
+    $end_of_day   = $date . ' 23:59:59';
+
+    // Try to use meta_query with a range; if HPOS breaks it, we still filter in PHP.
+    $query_args = array(
+        'status' => array('wc-completed'),
+        'limit'  => -1, // reasonable cap; adjust if needed
+        'type'   => 'shop_order',
+        'meta_query' => array(
+            'relation' => 'AND',
+            array(
+                'key'   => '_fulfillment_type',
+                'value' => $type,
             ),
-        );
+            array(
+                'key'     => $meta_key_date,
+                'value'   => array($start_of_day, $end_of_day),
+                'type'    => 'DATETIME',
+                'compare' => 'BETWEEN',
+            ),
+        ),
+        'orderby' => 'ID',
+        'order'   => 'ASC',
+    );
 
-        $orders = wc_get_orders($query_args);
-        if (empty($orders)) {
-            return array();
+
+    $orders = wc_get_orders($query_args);
+
+    // Safety filter in PHP (in case meta_query is ignored)
+    $filtered = array();
+    foreach ($orders as $order) {
+        $fulfillment_type = $order->get_meta('_fulfillment_type', true);
+        $stored_date      = $order->get_meta($meta_key_date, true);
+
+        // Normalize stored date to Y-m-d
+        if (!empty($stored_date)) {
+            try {
+                $dt = new DateTime($stored_date);
+                $stored_date = $dt->format('Y-m-d');
+            } catch (Exception $e) {
+                $stored_date = '';
+            }
         }
 
-        return $orders;
+        if ($fulfillment_type === $type && $stored_date === $date) {
+            $filtered[] = $order;
+        }
     }
+
+    $order_ids_matched = wp_list_pluck($filtered, 'get_id');
+
+    if (empty($filtered)) {
+        return array();
+    }
+
+
+    return $filtered;
+}
 
     private function build_email_body($pickup_orders, $delivery_orders, $date) {
         $all_orders = array_merge($pickup_orders, $delivery_orders);
@@ -302,7 +344,7 @@ class WC_Multidrop_Scheduler_Email_Notifications {
         $subject_template = get_option('wc_multidrop_email_subject', '[TEST] Fulfillment summary for {date}');
         $subject = str_replace('{date}', date_i18n(get_option('date_format'), strtotime($today)), $subject_template);
 
-        $headers = array('Content-Type: text/html; charset=UTF-8');
+        $headers = array('Content-Type: text/html; charset=UTF-8', 'From: GlutenvrijeWinkel  <info@glutenvrijewinkelamsterdam.nl>',);
         $message = $this->build_email_body($pickup_orders, $delivery_orders, $today);
 
         foreach ($recipients as $to) {
