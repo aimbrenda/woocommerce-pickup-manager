@@ -21,15 +21,14 @@ define('WC_MULTIDROP_SCHEDULER_VERSION', '3.1.1');
 define('WC_MULTIDROP_SCHEDULER_PLUGIN_DIR', plugin_dir_path(__FILE__));
 define('WC_MULTIDROP_SCHEDULER_PLUGIN_URL', plugin_dir_url(__FILE__));
 
-$wc_multidrop_scheduler_active_plugins = apply_filters(
-    'wc_multidrop_scheduler_active_plugins',
-    (array) get_option( 'wc_multidrop_scheduler_active_plugins', get_option( 'active_plugins', array() ) )
-);
-
-if ( ! in_array( 'woocommerce/woocommerce.php', $wc_multidrop_scheduler_active_plugins, true ) ) {
-    add_action( 'admin_notices', function () {
+// WooCommerce dependency guard with network/multisite awareness
+if (!class_exists('WooCommerce')) {
+    add_action('admin_notices', function () {
+        if (!current_user_can('activate_plugins')) {
+            return;
+        }
         echo '<div class="error"><p>MultiDrop Scheduler for WooCommerce requires WooCommerce to be installed and active.</p></div>';
-    } );
+    });
     return;
 }
 
