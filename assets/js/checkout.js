@@ -54,9 +54,34 @@ jQuery(document).ready(function($) {
         $deliveryNote.html('<p style="margin:0;">' + noteText + '</p>').slideDown();
     }
 
+    // CRITICAL: Clear chosen shipping method when location changes
+    function clearChosenShipping() {
+        // Remove the chosen shipping method from session storage
+        sessionStorage.removeItem('wc_shipping_chosen');
+        
+        // Also clear any radio button selection
+        $('input[name^="shipping_method"]').prop('checked', false);
+        
+        console.log('Cleared chosen shipping method');
+    }
+
+    // CRITICAL: Intercept WooCommerce's update_order_review AJAX to ensure pickup_location_id is included
+    $(document.body).on('wc_fragments_refreshed wc_fragments_loaded', function() {
+        const locationId = $locationSelect.val();
+        if (locationId && $locationSelect.attr('name') !== 'pickup_location_id') {
+            $locationSelect.attr('name', 'pickup_location_id');
+        }
+    });
+
     $locationSelect.on('change', function() {
         const locationId = $(this).val();
         const selectedOption = getSelectedOption(locationId);
+
+        // CRITICAL: Ensure name attribute is ALWAYS set
+        $(this).attr('name', 'pickup_location_id');
+
+        // CRITICAL: Clear the chosen shipping method
+        clearChosenShipping();
 
         if (!locationId) {
             resetDatePicker();
@@ -87,10 +112,7 @@ jQuery(document).ready(function($) {
                     } else {
                         renderDeliveryNote('');
                     }
-                    $(document.body).trigger('update_checkout');
-                },
-                error: function() {
-                    renderDeliveryNote('');
+                    // Trigger checkout update AFTER we have the location
                     $(document.body).trigger('update_checkout');
                 }
             });
@@ -144,6 +166,7 @@ jQuery(document).ready(function($) {
                     });
 
                     $dateInput.attr('placeholder', wcMultidropScheduler.placeholderSelectDate);
+                    // Trigger checkout update after flatpickr is initialized
                     setTimeout(function() {
                         $(document.body).trigger('update_checkout');
                     }, 200);
@@ -153,5 +176,21 @@ jQuery(document).ready(function($) {
                 alert(wcMultidropScheduler.errorLoadDates);
             }
         });
+    });
+
+    // CRITICAL: Force include pickup_location_id in WooCommerce AJAX requests
+    $(document).ajaxSend(function(event, jqxhr, settings) {
+        // Check if this is a WooCommerce update_order_review request
+        if (settings.url && settings.url.indexOf('wc-ajax=update_order_review') > -1) {
+            const locationId = $locationSelect.val();
+            if (locationId) {
+                // Check if pickup_location_id is already in the data
+                if (settings.data && settings.data.indexOf('pickup_location_id=') === -1) {
+                    // Append pickup_location_id
+                    settings.data += '&pickup_location_id=' + encodeURIComponent(locationId);
+                    console.log('Added pickup_location_id to AJAX request:', locationId);
+                }
+            }
+        }
     });
 });
