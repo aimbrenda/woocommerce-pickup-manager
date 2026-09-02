@@ -53,8 +53,6 @@ class WC_Multidrop_Scheduler {
         add_action('plugins_loaded', array($this, 'init'));
 
         register_activation_hook(__FILE__, array($this, 'activate'));
-
-        add_action('plugins_loaded', 'wc_multidrop_scheduler_maybe_upgrade', 1);
     }
 
     public function init() {
@@ -87,6 +85,8 @@ function wc_multidrop_scheduler_maybe_upgrade() {
 
     update_option('wc_multidrop_scheduler_version', WC_MULTIDROP_SCHEDULER_VERSION);
 }
+
+add_action('plugins_loaded', 'wc_multidrop_scheduler_maybe_upgrade', 1);
 
 WC_Multidrop_Scheduler::get_instance();
 
